@@ -1,0 +1,26 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+
+    <style name="Base.Theme.Yuetingmusic" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+         <item name="colorPrimary">@color/my_light_primary</item>
+        <item name="toolbarStyle">@style/Widget.App.Toolbar</item>
+    </style>
+
+    <style name="Theme.Yuetingmusic" parent="Base.Theme.Yuetingmusic" />
+
+    <color name="my_light_primary">#29B6F6</color>
+    <color name="shrine_pink_100">#E1F5FE</color>
+    <color name="shrine_pink_900">#01579B</color>
+
+    <style name="Widget.App.Toolbar" parent="Widget.Material3.Toolbar">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.Toolbar</item>
+<!--        <item name="titleTextAppearance">@style/TextAppearance.App.TitleLarge</item>-->
+<!--        <item name="subtitleTextAppearance">@style/TextAppearance.App.TitleMedium</item>-->
+    </style>
+
+    <style name="ThemeOverlay.App.Toolbar" parent="">
+        <item name="colorSurface">@color/shrine_pink_100</item>
+        <item name="colorOnSurface">@color/shrine_pink_900</item>
+    </style>
+</resources>
