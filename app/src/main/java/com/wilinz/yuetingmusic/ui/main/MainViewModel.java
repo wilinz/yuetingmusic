@@ -18,17 +18,6 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class MainViewModel extends ViewModel {
 
-    private MutableLiveData<List<Song>> songs=new MutableLiveData<List<Song>>();
 
-    public LiveData<List<Song>> getSongs(){
-        return songs;
-    }
-
-    public void getMusics(@NonNull Context context) {
-        SongRepository.getMusics(context)
-                .subscribe(songs1 -> {
-                    songs.postValue(songs1);
-                });
-    }
 
 }

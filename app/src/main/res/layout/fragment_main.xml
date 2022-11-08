@@ -21,11 +21,6 @@
                 app:menu="@menu/top_app_bar"
                 app:title="悦听" />
 
-            <LinearLayout
-                style="Widget.Material3.Button.ElevatedButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
         </com.google.android.material.appbar.AppBarLayout>
 
         <!-- Note: A RecyclerView can also be used -->
@@ -42,6 +37,12 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:orientation="vertical">
+
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/view_page"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+
                 <TextView
                     android:id="@+id/songs"
                     android:layout_width="match_parent"

@@ -12,17 +12,17 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.wilinz.yuetingmusic.Key;
 import com.wilinz.yuetingmusic.R;
-import com.wilinz.yuetingmusic.databinding.FragmentFirstBinding;
+import com.wilinz.yuetingmusic.databinding.FragmentWelcomeBinding;
 
 import java.util.Objects;
 
 public class WelcomeFragment extends Fragment {
-    private FragmentFirstBinding binding;
+    private FragmentWelcomeBinding binding;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = FragmentFirstBinding.inflate(inflater, container, false);
+        binding = FragmentWelcomeBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 
