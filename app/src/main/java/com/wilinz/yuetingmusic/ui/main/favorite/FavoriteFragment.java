@@ -12,7 +12,6 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.wilinz.yuetingmusic.Key;
 import com.wilinz.yuetingmusic.databinding.FragmentFavoriteBinding;
-import com.wilinz.yuetingmusic.databinding.FragmentSecondBinding;
 
 public class FavoriteFragment extends Fragment {
     private FragmentFavoriteBinding binding;

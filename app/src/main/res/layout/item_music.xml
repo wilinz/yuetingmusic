@@ -1,42 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="16dp"
+    android:clickable="true"
     android:gravity="center_vertical"
-    app:layoutDescription="@xml/item_music_scene">
-
-    <ImageView
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:contentDescription="头像"
-        app:srcCompat="@drawable/icon"/>
+    app:layoutDescription="@xml/item_music_scene"
+    style="?attr/materialCardViewElevatedStyle"
+    app:cardElevation="0dp"
+    android:focusable="true">
 
     <LinearLayout
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:orientation="vertical">
-        <TextView
-            android:id="@+id/name"
+        android:gravity="center_vertical"
+        android:padding="16dp"
+        android:orientation="horizontal">
+        <ImageView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:contentDescription="头像"
+            app:srcCompat="@drawable/icon"/>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:text="起风了"/>
+            <TextView
+                android:id="@+id/desc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="作者-专辑"/>
+
+        </LinearLayout>
+        <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:text="起风了"/>
-        <TextView
-            android:id="@+id/desc"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="作者-专辑"/>
+            style="?attr/materialIconButtonStyle"
+            app:icon="@drawable/play_arrow_48px"/>
 
     </LinearLayout>
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        style="?attr/materialIconButtonStyle"
-        app:icon="@drawable/play_arrow_48px"/>
 
-</LinearLayout>
+</com.google.android.material.card.MaterialCardView>

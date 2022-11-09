@@ -35,6 +35,16 @@
         android:label="@string/second_fragment_label"
         tools:layout="@layout/fragment_main">
 
+        <action
+            android:id="@+id/action_to_PlayerFragment"
+            app:destination="@id/PlayerFragment" />
+
+    </fragment>
+    <fragment
+        android:id="@+id/PlayerFragment"
+        android:name="com.wilinz.yuetingmusic.ui.player.PlayerFragment"
+        android:label="@string/second_fragment_label"
+        tools:layout="@layout/fragment_player">
 
     </fragment>
 </navigation>

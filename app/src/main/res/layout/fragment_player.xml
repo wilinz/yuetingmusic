@@ -40,12 +40,15 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/music_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="18sp"
+            android:layout_marginStart="8dp"
             android:text="起风了"/>
 
         <com.google.android.material.slider.Slider
+            android:id="@+id/current_progress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:valueFrom="0.0"
@@ -57,11 +60,13 @@
             android:paddingStart="8dp"
             android:paddingEnd="8dp">
             <TextView
+                android:id="@+id/current_progress_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="00:13"
                 android:layout_alignParentStart="true"/>
             <TextView
+                android:id="@+id/duration"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="03:57"
@@ -71,7 +76,8 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="0dp">
             <FrameLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -81,7 +87,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     style="?attr/materialIconButtonStyle"
-                    app:icon="@drawable/play_arrow_48px"/>
+                    app:icon="@drawable/round_repeat_24"/>
 
             </FrameLayout>
 
@@ -94,7 +100,21 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     style="?attr/materialIconButtonStyle"
-                    app:icon="@drawable/play_arrow_48px"/>
+                    app:icon="@drawable/round_fast_rewind_24"/>
+
+            </FrameLayout>
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="@integer/material_motion_duration_long_1">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/play"
+                    style="?attr/materialIconButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    app:icon="@drawable/play_arrow_48px" />
 
             </FrameLayout>
             <FrameLayout
@@ -106,7 +126,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     style="?attr/materialIconButtonStyle"
-                    app:icon="@drawable/play_arrow_48px"/>
+                    app:icon="@drawable/round_fast_forward_24"/>
 
             </FrameLayout>
             <FrameLayout
@@ -118,22 +138,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     style="?attr/materialIconButtonStyle"
-                    app:icon="@drawable/play_arrow_48px"/>
-
-            </FrameLayout>
-            <FrameLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="@integer/material_motion_duration_long_1">
-                <Button
-                    android:layout_gravity="center"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    style="?attr/materialIconButtonStyle"
-                    app:icon="@drawable/play_arrow_48px"/>
+                    app:icon="@drawable/round_queue_music_24"/>
 
             </FrameLayout>
         </LinearLayout>
+        <Space
+            android:id="@+id/bottom_padding"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"/>
     </LinearLayout>
 
 

@@ -4,24 +4,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:liftOnScroll="true"
+        app:layout_scrollFlags="scroll|enterAlways|snap"
+        android:fitsSystemWindows="true">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/topAppBar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:menu="@menu/top_app_bar"
+            app:title="悦听" />
+
+    </com.google.android.material.appbar.AppBarLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-        <com.google.android.material.appbar.AppBarLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fitsSystemWindows="true">
 
-            <com.google.android.material.appbar.MaterialToolbar
-                android:id="@+id/topAppBar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:menu="@menu/top_app_bar"
-                app:title="悦听" />
-
-        </com.google.android.material.appbar.AppBarLayout>
 
         <!-- Note: A RecyclerView can also be used -->
 
@@ -32,65 +35,68 @@
             android:orientation="vertical">
 
 
-            <LinearLayout
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
+                android:layout_weight="1">
                 <androidx.viewpager2.widget.ViewPager2
                     android:id="@+id/view_page"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"/>
 
-                <TextView
-                    android:id="@+id/songs"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-
-            </LinearLayout>
-
-            <com.google.android.material.card.MaterialCardView
-                style="?attr/materialCardViewFilledStyle"
-                android:layout_margin="16dp"
-                android:padding="8dp"
-                app:cardElevation="8dp"
-                android:clickable="true"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:focusable="true">
-
-                <LinearLayout
+                <com.google.android.material.card.MaterialCardView
+                    style="?attr/materialCardViewFilledStyle"
+                    android:layout_margin="16dp"
+                    android:padding="8dp"
+                    app:cardElevation="8dp"
+                    android:clickable="true"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="16dp"
-                    android:gravity="center">
+                    android:layout_gravity="bottom"
+                    android:focusable="true">
 
-                    <ImageView
-                        android:id="@+id/music_avatar"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        app:srcCompat="@drawable/avatar"/>
-
-                    <TextView
-                        android:layout_width="0dp"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginEnd="16dp"
-                        android:layout_weight="1"
-                        android:text="起风了"
-                        android:textSize="16sp" />
+                        android:padding="16dp"
+                        android:gravity="center">
 
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        style="?attr/materialIconButtonStyle"
-                        app:icon="@drawable/play_arrow_48px"/>
+                        <ImageView
+                            android:id="@+id/music_avatar"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            app:srcCompat="@drawable/avatar"/>
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginEnd="16dp"
+                            android:layout_weight="1"
+                            android:text="起风了"
+                            android:textSize="16sp" />
+
+                        <Button
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            style="?attr/materialIconButtonStyle"
+                            app:icon="@drawable/play_arrow_48px"/>
 
 
-                </LinearLayout>
+                    </LinearLayout>
 
-            </com.google.android.material.card.MaterialCardView>
+                </com.google.android.material.card.MaterialCardView>
+
+            </FrameLayout>
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="0dp"-->
+<!--                android:layout_weight="1"-->
+<!--                android:orientation="vertical">-->
+
+<!--                -->
+<!--            </LinearLayout>-->
+
 
             <com.google.android.material.bottomnavigation.BottomNavigationView
                 android:id="@+id/bottom_navigation"

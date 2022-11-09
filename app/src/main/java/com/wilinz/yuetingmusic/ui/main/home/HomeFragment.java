@@ -17,8 +17,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.permissionx.guolindev.PermissionX;
 import com.wilinz.yuetingmusic.Key;
+import com.wilinz.yuetingmusic.R;
 import com.wilinz.yuetingmusic.databinding.FragmentHomeBinding;
-import com.wilinz.yuetingmusic.databinding.FragmentSecondBinding;
 
 import java.util.List;
 
@@ -26,7 +26,7 @@ public class HomeFragment extends Fragment {
     private FragmentHomeBinding binding;
     private HomeViewModel viewModel;
 
-    private static String TAG="HomeFragment";
+    private static String TAG = "HomeFragment";
 
     @Nullable
     @Override
@@ -46,8 +46,14 @@ public class HomeFragment extends Fragment {
             adapter.setMusics(songs);
         });
 
+        MusicAdapter adapter = new MusicAdapter(List.of());
+        adapter.setOnItemClickListener((index, music) -> {
+            Bundle bundle=new Bundle();
+            bundle.putParcelable(Key.music,music);
+            NavHostFragment.findNavController(this).navigate(R.id.action_to_PlayerFragment,bundle);
+        });
         binding.musicList.setLayoutManager(new LinearLayoutManager(requireContext()));
-        binding.musicList.setAdapter(new MusicAdapter(List.of()));
+        binding.musicList.setAdapter(adapter);
 
         PermissionX.init(requireActivity())
                 .permissions(Manifest.permission.READ_EXTERNAL_STORAGE)

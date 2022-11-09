@@ -59,7 +59,9 @@ public class MainFragment extends Fragment {
                     default:
                         id = R.id.page_3;
                 }
-                binding.bottomNavigation.setSelectedItemId(id);
+                if (binding.bottomNavigation.getSelectedItemId() != id) {
+                    binding.bottomNavigation.setSelectedItemId(id);
+                }
             }
 
         });
@@ -76,10 +78,11 @@ public class MainFragment extends Fragment {
                 default:
                     index = 2;
             }
-            binding.viewPage.setCurrentItem(index, true);
+            if (binding.viewPage.getCurrentItem() != index) {
+                binding.viewPage.setCurrentItem(index, true);
+            }
             return true;
         });
-
 
 
     }
