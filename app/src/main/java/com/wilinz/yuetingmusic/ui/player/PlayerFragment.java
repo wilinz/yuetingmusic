@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -33,7 +34,9 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class PlayerFragment extends Fragment {
 
@@ -54,17 +57,18 @@ public class PlayerFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         EventBus.getDefault().register(this);
-        requireContext().startService(new Intent(requireContext(), PlayerService.class));
+        PlayerService.start(requireContext());
         viewModel = new ViewModelProvider(this).get(PlayerViewModel.class);
         ViewGroup.LayoutParams layoutParams = binding.bottomPadding.getLayoutParams();
         layoutParams.height = ScreenUtil.getNavigationBarHeight(requireContext());
         Bundle bundle = NavHostFragment.findNavController(this).getCurrentBackStackEntry().getArguments();
         Song music = bundle.getParcelable(Key.music);
 
-        binding.play.setTag(false);
+        EventBus.getDefault().post(new PlayerEvent.GetPlayStatusEvent());
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         binding.play.setOnClickListener(v -> {
-            boolean isPlayed = (boolean) binding.play.getTag();
-            setPlayButtonStatus(isPlayed);
+            Object tag = binding.play.getTag();
+            boolean isPlayed = tag instanceof Boolean && (boolean) tag;
             if (!isPlayed) {
                 EventBus.getDefault().post(new PlayerEvent.PlayEvent(music));
             } else {
@@ -73,18 +77,33 @@ public class PlayerFragment extends Fragment {
         });
         binding.currentProgress.setLabelFormatter((value) -> dateFormat.format(value));
         binding.currentProgress.addOnChangeListener((slider, value, fromUser) -> {
-            EventBus.getDefault().post(new PlayerEvent.SeekEvent((long) value));
+            if (fromUser) {
+                EventBus.getDefault().post(new PlayerEvent.SeekEvent((long) value));
+            }
         });
         binding.musicName.setText(music.song);
     }
 
-    private void setPlayButtonStatus(boolean isPlayed) {
-        if (!isPlayed) {
-            binding.play.setTag(true);
-            binding.play.setIcon(ContextCompat.getDrawable(requireContext(), R.drawable.round_pause_24));
-        } else {
-            binding.play.setTag(false);
-            binding.play.setIcon(ContextCompat.getDrawable(requireContext(), R.drawable.round_play_arrow_24));
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPlayEvent(PlayerEvent.PlayEvent event) {
+        setPlayButtonStatus(true);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPauseEvent(PlayerEvent.PauseEvent event) {
+        setPlayButtonStatus(false);
+    }
+
+    private void setPlayButtonStatus(boolean isPlaying) {
+        Object tag = binding.play.getTag();
+        boolean tag1 = tag instanceof Boolean && (boolean) tag;
+        if (tag1 != isPlaying) {
+            binding.play.setTag(isPlaying);
+            if (isPlaying) {
+                binding.play.setIcon(ContextCompat.getDrawable(requireContext(), R.drawable.round_pause_24));
+            } else {
+                binding.play.setIcon(ContextCompat.getDrawable(requireContext(), R.drawable.round_play_arrow_24));
+            }
         }
     }
 
@@ -97,16 +116,18 @@ public class PlayerFragment extends Fragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onProgressChangeEvent(PlayerEvent.ProgressChangeEvent event) {
-//        setPlayButtonStatus(true);
-        binding.currentProgressTime.setText(dateFormat.format(event.progress));
-        binding.duration.setText(dateFormat.format(event.duration));
-        binding.currentProgress.setValueTo(event.duration);
-        binding.currentProgress.setValue(event.progress);
+        long duration = event.duration > 0 ? event.duration : 60000;
+        long progress = event.progress >= 0 ? event.progress : 0;
+        binding.currentProgressTime.setText(dateFormat.format(progress));
+        binding.duration.setText(dateFormat.format(duration));
+        binding.currentProgress.setValueTo(duration);
+        binding.currentProgress.setValue(progress);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onCreateMediaPlayerEvent(PlayerEvent.CreateMediaPlayerEvent event) {
-        Toast.makeText(requireContext(),"创建播放器",Toast.LENGTH_SHORT).show();
+//        setPlayButtonStatus(true);
+//        Toast.makeText(requireContext(), "创建播放器", Toast.LENGTH_SHORT).show();
         setPlayButtonStatus(event.player.isPlaying());
     }
 }

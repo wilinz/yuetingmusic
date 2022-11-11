@@ -40,6 +40,11 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
+        viewModel.getEvent().observe(this.getViewLifecycleOwner(), (event) -> {
+            if (event == Event.GetMusicsSuccess && binding.swipeRefresh.isRefreshing()) {
+                binding.swipeRefresh.setRefreshing(false);
+            }
+        });
         viewModel.getSongs().observe(this.getViewLifecycleOwner(), songs -> {
             MusicAdapter adapter = (MusicAdapter) binding.musicList.getAdapter();
             Log.d(TAG, songs.toString());
@@ -48,13 +53,21 @@ public class HomeFragment extends Fragment {
 
         MusicAdapter adapter = new MusicAdapter(List.of());
         adapter.setOnItemClickListener((index, music) -> {
-            Bundle bundle=new Bundle();
-            bundle.putParcelable(Key.music,music);
-            NavHostFragment.findNavController(this).navigate(R.id.action_to_PlayerFragment,bundle);
+            Bundle bundle = new Bundle();
+            bundle.putParcelable(Key.music, music);
+            NavHostFragment.findNavController(this).navigate(R.id.action_to_PlayerFragment, bundle);
         });
         binding.musicList.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.musicList.setAdapter(adapter);
 
+        binding.swipeRefresh.setOnRefreshListener(() -> {
+            getMusics();
+        });
+
+        getMusics();
+    }
+
+    public void getMusics() {
         PermissionX.init(requireActivity())
                 .permissions(Manifest.permission.READ_EXTERNAL_STORAGE)
                 .request((allGranted, grantedList, deniedList) -> {

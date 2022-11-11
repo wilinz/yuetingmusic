@@ -55,4 +55,7 @@ public class PlayerEvent {
             this.player = player;
         }
     }
+
+    public static class GetPlayStatusEvent {
+    }
 }

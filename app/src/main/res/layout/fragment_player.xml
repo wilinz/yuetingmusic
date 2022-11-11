@@ -100,7 +100,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     style="?attr/materialIconButtonStyle"
-                    app:icon="@drawable/round_fast_rewind_24"/>
+                    app:icon="@drawable/skip_previous"/>
 
             </FrameLayout>
             <FrameLayout
@@ -126,7 +126,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     style="?attr/materialIconButtonStyle"
-                    app:icon="@drawable/round_fast_forward_24"/>
+                    app:icon="@drawable/skip_next"/>
 
             </FrameLayout>
             <FrameLayout

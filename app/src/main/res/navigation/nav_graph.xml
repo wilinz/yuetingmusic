@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
     android:fitsSystemWindows="true"
-    app:startDestination="@id/FirstFragment">
+    app:startDestination="@id/MainFragment">
 
     <fragment
         android:id="@+id/FirstFragment"
@@ -37,6 +37,8 @@
 
         <action
             android:id="@+id/action_to_PlayerFragment"
+            app:enterAnim="@anim/up_enter"
+
             app:destination="@id/PlayerFragment" />
 
     </fragment>

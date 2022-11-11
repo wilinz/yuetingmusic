@@ -16,10 +16,16 @@ import java.util.List;
 
 public class HomeViewModel extends ViewModel {
 
-    private MutableLiveData<List<Song>> songs = new MutableLiveData<List<Song>>();
+    private MutableLiveData<List<Song>> songs = new MutableLiveData<>();
 
     public LiveData<List<Song>> getSongs() {
         return songs;
+    }
+
+    private MutableLiveData<Event> event = new MutableLiveData<>();
+
+    public LiveData<Event> getEvent() {
+        return event;
     }
 
     public void getMusics(@NonNull Context context) {
@@ -29,6 +35,7 @@ public class HomeViewModel extends ViewModel {
                     songs2.addAll(songs1);
                     songs2.addAll(songs1);
                     songs.postValue(songs2);
+                    event.postValue(Event.GetMusicsSuccess);
                 });
     }
 }

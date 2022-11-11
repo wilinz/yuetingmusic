@@ -59,10 +59,10 @@ public class SongRepository {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnComplete(() -> {
-                    Toast.makeText(context, "插入音乐成功", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "插入音乐到本地媒体库成功，请刷新", Toast.LENGTH_SHORT).show();
                 })
                 .doOnError(e -> {
-                    Toast.makeText(context, "插入音乐失败：" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "插入音乐到本地媒体库失败：" + e.getMessage(), Toast.LENGTH_SHORT).show();
                 })
                 .subscribe();
     }

@@ -4,7 +4,7 @@
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 <!--    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />-->
-
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <application
         android:name=".App"
         android:allowBackup="true"
@@ -20,10 +20,12 @@
         <service
             android:name=".service.PlayerService"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="true"
+            android:foregroundServiceType="mediaPlayback"/>
 
         <activity
             android:name=".MainActivity"
+            android:launchMode="singleTask"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.Yuetingmusic">

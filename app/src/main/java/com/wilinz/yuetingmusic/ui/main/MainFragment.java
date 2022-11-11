@@ -43,6 +43,7 @@ public class MainFragment extends Fragment {
         Glide.with(this).load(R.drawable.avatar).apply(options).into(binding.musicAvatar);
 
         binding.viewPage.setAdapter(new ViewPage2Adapter(this));
+        binding.viewPage.setUserInputEnabled(false);
         binding.viewPage.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
 
             @Override
