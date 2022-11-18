@@ -55,4 +55,8 @@
     <string name="login">登录</string>
     <string name="forgot_password">忘记密码？</string>
     <string name="search">搜索</string>
+    <string name="pause">暂停</string>
+    <string name="skip_previous">上一曲</string>
+    <string name="skip_next">下一曲</string>
+    <string name="playback_control_notification">播放控制通知</string>
 </resources>

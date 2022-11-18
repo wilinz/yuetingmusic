@@ -65,7 +65,6 @@ public class MediaUtil {
     }
 
     public static void saveAudio(Context context, String name, InputStream input) throws Exception {
-//        String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(FilenameUtils.getExtension(name));
         ContentValues contentValues = new ContentValues();
         contentValues.put(MediaStore.MediaColumns.TITLE, FilenameUtils.getBaseName(name));
         contentValues.put(MediaStore.MediaColumns.DATE_ADDED, System.currentTimeMillis());

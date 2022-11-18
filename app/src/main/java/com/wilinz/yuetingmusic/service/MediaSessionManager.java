@@ -8,6 +8,9 @@ import android.os.RemoteException;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
+
+import org.greenrobot.eventbus.EventBus;
 
 
 /**
@@ -33,14 +36,12 @@ public class MediaSessionManager {
 
 //    private final IMusicServiceStub control;
     private final Context context;
-    private MediaSessionCompat mMediaSession;
-    private Handler mHandler;
+    public MediaSessionCompat mMediaSession;
 
 
-    public MediaSessionManager(/*IMusicServiceStub control,*/ Context context, Handler mHandler) {
+    public MediaSessionManager(/*IMusicServiceStub control,*/ Context context) {
 //        this.control = control;
         this.context = context;
-        this.mHandler = mHandler;
         setupMediaSession();
     }
 
@@ -56,21 +57,11 @@ public class MediaSessionManager {
                         MediaSessionCompat.FLAG_HANDLES_QUEUE_COMMANDS |
                         MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS
         );
-        mMediaSession.setCallback(callback, mHandler);
+        PlaybackStateCompat stateBuilder = new PlaybackStateCompat.Builder()
+                .setActions(MEDIA_SESSION_ACTIONS).build();
+        mMediaSession.setPlaybackState(stateBuilder);
+        mMediaSession.setCallback(callback);
         mMediaSession.setActive(true);
-    }
-
-    /**
-     * 更新播放状态， 播放／暂停／拖动进度条时调用
-     */
-    public void updatePlaybackState() {
-        int state = isPlaying() ? PlaybackStateCompat.STATE_PLAYING :
-                PlaybackStateCompat.STATE_PAUSED;
-
-        mMediaSession.setPlaybackState(new PlaybackStateCompat.Builder()
-                .setActions(MEDIA_SESSION_ACTIONS)
-                .setState(state, getCurrentPosition(), 1)
-                .build());
     }
 
     private long getCurrentPosition() {
@@ -126,16 +117,6 @@ public class MediaSessionManager {
 //
 //    }
 
-    private long getCount() {
-//        try {
-//            return control.getPlayList().size();
-//        } catch (RemoteException e) {
-//            e.printStackTrace();
-//            return 0;
-//        }
-        return 0;
-    }
-
     public MediaSessionCompat.Token getMediaSession() {
         return mMediaSession.getSessionToken();
     }
@@ -158,62 +139,38 @@ public class MediaSessionManager {
         //        接收到监听事件，可以有选择的进行重写相关方法
         @Override
         public boolean onMediaButtonEvent(Intent mediaButtonEvent) {
-//            LogUtil.d(TAG, "mediaButtonEvent" + mediaButtonEvent);
+            Log.d(TAG, "mediaButtonEvent" + mediaButtonEvent);
             return super.onMediaButtonEvent(mediaButtonEvent);
         }
 
         @Override
         public void onPlay() {
-//            try {
-//                control.playPause();
-//            } catch (RemoteException e) {
-//                e.printStackTrace();
-//            }
+            EventBus.getDefault().post(new PlayerEvent.PlayEvent(null));
         }
 
         @Override
         public void onPause() {
-//            try {
-//                control.playPause();
-//            } catch (RemoteException e) {
-//                e.printStackTrace();
-//            }
+            EventBus.getDefault().post(new PlayerEvent.PauseEvent());
         }
 
         @Override
         public void onSkipToNext() {
-//            try {
-//                control.next();
-//            } catch (RemoteException e) {
-//                e.printStackTrace();
-//            }
+            EventBus.getDefault().post(new PlayerEvent.SkipToNextEvent());
         }
 
         @Override
         public void onSkipToPrevious() {
-//            try {
-//                control.prev();
-//            } catch (RemoteException e) {
-//                e.printStackTrace();
-//            }
+            EventBus.getDefault().post(new PlayerEvent.SkipToPreviousEvent());
         }
 
         @Override
         public void onStop() {
-//            try {
-//                control.playPause();
-//            } catch (RemoteException e) {
-//                e.printStackTrace();
-//            }
+            EventBus.getDefault().post(new PlayerEvent.StopEvent());
         }
 
         @Override
         public void onSeekTo(long pos) {
-//            try {
-//                control.seekTo((int) pos);
-//            } catch (RemoteException e) {
-//                e.printStackTrace();
-//            }
+            EventBus.getDefault().post(new PlayerEvent.SeekEvent(pos));
         }
     };
 }

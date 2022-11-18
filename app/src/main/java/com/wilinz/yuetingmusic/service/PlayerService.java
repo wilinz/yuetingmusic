@@ -1,5 +1,6 @@
 package com.wilinz.yuetingmusic.service;
 
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -60,6 +61,7 @@ public class PlayerService extends Service {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPlayEvent(PlayerEvent.PlayEvent event) {
+        notificationManager.notify(notificationId, createNotification(true));
         if (isFirstPlay) {
             try {
                 mediaPlayer.setDataSource(event.audio.path);
@@ -81,23 +83,17 @@ public class PlayerService extends Service {
         // Do something
     }
 
+    private MediaSessionManager mediaSessionManager;
+
     //Must be one of: NotificationManager.IMPORTANCE_UNSPECIFIED, NotificationManager.IMPORTANCE_NONE, NotificationManager.IMPORTANCE_MIN, NotificationManager.IMPORTANCE_LOW, NotificationManager.IMPORTANCE_DEFAULT, NotificationManager.IMPORTANCE_HIGH
-    private void createForeground() {
-//        RemoteViews bigNotRemoteView = new RemoteViews(this.getPackageName(), R.layout.notification_player_big);
-//        RemoteViews notRemoteView = new RemoteViews(this.getPackageName(), R.layout.notification_player);
-        NotificationChannel notificationChannel = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            notificationChannel = new NotificationChannel("player_controller", "音乐播放控制", NotificationManager.IMPORTANCE_HIGH);
-            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            assert notificationManager != null;
-            notificationManager.createNotificationChannel(notificationChannel);
-        }
+    private Notification createNotification(boolean isPlaying) {
+        createChannel();
         Intent intent = new Intent(this, MainActivity.class);
         PendingIntent pi = null;
         pi = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_MUTABLE);
         Handler mainHandler = new Handler(Looper.getMainLooper());
         androidx.media.app.NotificationCompat.MediaStyle style = new androidx.media.app.NotificationCompat.MediaStyle()
-                .setMediaSession(new MediaSessionManager(this, mainHandler).getMediaSession())
+                .setMediaSession(mediaSessionManager.getMediaSession())
                 .setShowActionsInCompactView(1, 0, 2, 3, 4);
         NotificationCompat.Builder notification = new NotificationCompat.Builder(this, "player_controller")
                 .setSmallIcon(R.drawable.logo)
@@ -108,18 +104,11 @@ public class PlayerService extends Service {
                 .setContentText("起风了")
                 .setWhen(System.currentTimeMillis())
                 .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.default_cover_place))
-                .addAction(R.drawable.outline_favorite_border_24,
-                        "收藏",
-                        pi)
-                .addAction(R.drawable.skip_previous,
-                        "上一首",
-                        pi)
-                .addAction(R.drawable.play_arrow_48px,
-                        "播放",
-                        pi)
-                .addAction(R.drawable.skip_next,
-                        "下一首",
-                        pi)
+//                .addAction(R.drawable.outline_favorite_border_24,
+//                        "收藏",
+//                        pi)
+
+
 //                .addAction(R.drawable.ic_lyric,
 //                        "歌词",
 //                        retrievePlaybackAction(ACTION_LYRIC))
@@ -128,8 +117,25 @@ public class PlayerService extends Service {
 //                        retrievePlaybackAction(ACTION_CLOSE))
                 .setDeleteIntent(MediaButtonReceiver.buildMediaButtonPendingIntent(
                         this, PlaybackStateCompat.ACTION_STOP));
-
-
+        notification.addAction(new NotificationCompat.Action(R.drawable.skip_previous,
+                "上一首",
+                MediaButtonReceiver.buildMediaButtonPendingIntent(this,
+                        PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)));
+        if (!isPlaying) {
+            notification.addAction(new NotificationCompat.Action(R.drawable.play_arrow_24px,
+                    "播放",
+                    MediaButtonReceiver.buildMediaButtonPendingIntent(this,
+                            PlaybackStateCompat.ACTION_PLAY)));
+        } else {
+            notification.addAction(new NotificationCompat.Action(R.drawable.round_pause_24,
+                    "暂停",
+                    MediaButtonReceiver.buildMediaButtonPendingIntent(this,
+                            PlaybackStateCompat.ACTION_PAUSE)));
+        }
+        notification.addAction(new NotificationCompat.Action(R.drawable.skip_next,
+                "下一首",
+                MediaButtonReceiver.buildMediaButtonPendingIntent(this,
+                        PlaybackStateCompat.ACTION_SKIP_TO_NEXT)));
         Glide.with(this)
                 .asBitmap()
                 .load(R.drawable.default_cover_place)
@@ -137,7 +143,7 @@ public class PlayerService extends Service {
                     @Override
                     public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
                         notification.setLargeIcon(resource);
-                        notificationManager.notify(1233,notification.build());
+                        notificationManager.notify(notificationId, notification.build());
                     }
 
                     @Override
@@ -146,8 +152,20 @@ public class PlayerService extends Service {
                     }
                 });
 
-        startForeground(1233, notification.build());
+        return notification.build();
 
+    }
+
+    private static int notificationId = 1233;
+
+    private void createChannel() {
+        NotificationChannel notificationChannel = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            notificationChannel = new NotificationChannel("player_controller", "音乐播放控制", NotificationManager.IMPORTANCE_HIGH);
+            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            assert notificationManager != null;
+            notificationManager.createNotificationChannel(notificationChannel);
+        }
     }
 
     private void play() {
@@ -163,8 +181,17 @@ public class PlayerService extends Service {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPauseEvent(PlayerEvent.PauseEvent event) {
+        notificationManager.notify(notificationId, createNotification(false));
         timer.cancel();
         mediaPlayer.pause();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onStopEvent(PlayerEvent.StopEvent event) {
+        notificationManager.notify(notificationId, createNotification(false));
+        mediaPlayer.stop();
+        mediaPlayer = null;
+        stopSelf();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -183,10 +210,17 @@ public class PlayerService extends Service {
         super.onCreate();
         isStarted = true;
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        createForeground();
+        mediaSessionManager = new MediaSessionManager(this);
+        startForeground(notificationId, createNotification(false));
         mediaPlayer = new MediaPlayer();
         EventBus.getDefault().register(this);
         EventBus.getDefault().post(new PlayerEvent.CreateMediaPlayerEvent(mediaPlayer));
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        MediaButtonReceiver.handleIntent(mediaSessionManager.mMediaSession, intent);
+        return super.onStartCommand(intent, flags, startId);
     }
 
     @Override

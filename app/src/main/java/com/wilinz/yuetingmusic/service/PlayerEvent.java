@@ -20,6 +20,16 @@ public class PlayerEvent {
     public static class PauseEvent {
     }
 
+    public static class SkipToNextEvent {
+    }
+
+    public static class SkipToPreviousEvent {
+    }
+
+    public static class StopEvent{
+
+    }
+
     public static class ProgressChangeEvent {
         @NonNull
         @Override
