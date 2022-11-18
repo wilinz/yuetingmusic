@@ -5,7 +5,34 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import java.util.Objects;
+
 public class Song implements Parcelable {
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Song song1 = (Song) o;
+
+        if (duration != song1.duration) return false;
+        if (size != song1.size) return false;
+        if (!Objects.equals(song, song1.song)) return false;
+        if (!Objects.equals(singer, song1.singer)) return false;
+        if (!Objects.equals(album, song1.album)) return false;
+        return Objects.equals(path, song1.path);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = song != null ? song.hashCode() : 0;
+        result = 31 * result + (singer != null ? singer.hashCode() : 0);
+        result = 31 * result + (album != null ? album.hashCode() : 0);
+        result = 31 * result + (path != null ? path.hashCode() : 0);
+        result = 31 * result + duration;
+        result = 31 * result + (int) (size ^ (size >>> 32));
+        return result;
+    }
 
     public Song(){}
 
