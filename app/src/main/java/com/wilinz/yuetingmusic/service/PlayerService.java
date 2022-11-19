@@ -64,7 +64,7 @@ public class PlayerService extends Service {
         notificationManager.notify(notificationId, createNotification(true));
         if (isFirstPlay) {
             try {
-                mediaPlayer.setDataSource(event.audio.path);
+//                mediaPlayer.setDataSource(event.audio.uri);
                 mediaPlayer.setLooping(true);
                 mediaPlayer.prepareAsync();
                 mediaPlayer.setOnPreparedListener((player) -> {
@@ -74,7 +74,7 @@ public class PlayerService extends Service {
                 mediaPlayer.setOnCompletionListener((player) -> {
                     mediaPlayer.reset();
                 });
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         } else {

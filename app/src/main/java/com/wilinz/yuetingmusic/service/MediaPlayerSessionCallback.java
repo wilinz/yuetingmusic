@@ -1,7 +1,6 @@
 package com.wilinz.yuetingmusic.service;
 
 import android.app.Service;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
@@ -10,8 +9,9 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
+import com.wilinz.yuetingmusic.data.model.Song;
+
 import java.io.IOException;
-import java.util.List;
 
 public class MediaPlayerSessionCallback extends MyMediaSessionCallback {
 
@@ -22,27 +22,28 @@ public class MediaPlayerSessionCallback extends MyMediaSessionCallback {
     public MediaPlayerSessionCallback(Service service, MyAudioManager myAudioManager, MyNotificationManager myNotificationManager, MediaSessionCompat mediaSession) {
         super(service, myAudioManager, myNotificationManager);
         this.mediaSession = mediaSession;
-        mediaPlayer.setOnPreparedListener((player) -> {
-            mediaPlayer.start();
-            PlaybackStateCompat mPlaybackStateCompat = new PlaybackStateCompat.Builder()
-                    .setState(PlaybackStateCompat.STATE_PLAYING,
-                            mediaPlayer.getCurrentPosition(),
-                            1.0f)
-                    .setActions(getAvailableActions(PlaybackStateCompat.STATE_PLAYING))
-                    .build();
-            mediaSession.setPlaybackState(mPlaybackStateCompat);
-        });
-        mediaPlayer.setOnCompletionListener((player) -> {
-            PlaybackStateCompat mPlaybackStateCompat = new PlaybackStateCompat.Builder()
-                    .setState(PlaybackStateCompat.STATE_NONE, mediaPlayer.getCurrentPosition(), 1.0f)
-                    .setActions(getAvailableActions(PlaybackStateCompat.STATE_NONE))
-                    .build();
-            mediaSession.setPlaybackState(mPlaybackStateCompat);
-            mediaPlayer.reset();
-        });
+        initPlayer(mediaSession);
     }
 
-    public long getAvailableActions(@PlaybackStateCompat.State int state) {
+    private void initPlayer(MediaSessionCompat mediaSession) {
+        mediaPlayer.setOnPreparedListener(this::onPreparedListener);
+        mediaPlayer.setOnCompletionListener(this::onCompletionListener);
+    }
+
+    private void onPreparedListener(MediaPlayer player) {
+        onPlay();
+    }
+
+    private void onCompletionListener(MediaPlayer player) {
+        PlaybackStateCompat mPlaybackStateCompat = new PlaybackStateCompat.Builder()
+                .setState(PlaybackStateCompat.STATE_NONE, mediaPlayer.getCurrentPosition(), 1.0f)
+                .setActions(getAvailableActions(PlaybackStateCompat.STATE_NONE))
+                .build();
+        mediaSession.setPlaybackState(mPlaybackStateCompat);
+        mediaPlayer.reset();
+    }
+
+    public static long getAvailableActions(@PlaybackStateCompat.State int state) {
         long actions = (PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
                 | PlaybackStateCompat.ACTION_SKIP_TO_NEXT
                 | PlaybackStateCompat.ACTION_REWIND
@@ -56,29 +57,58 @@ public class MediaPlayerSessionCallback extends MyMediaSessionCallback {
         return actions;
     }
 
+
     @Override
     public void onPlay() {
         super.onPlay();
-        PlaybackStateCompat playbackStateCompat=mediaSession.getController().getPlaybackState();
-        if (playbackStateCompat.getState() == PlaybackStateCompat.STATE_PAUSED
+        if (getPlaybackState().getState() != PlaybackStateCompat.STATE_PLAYING
                 && myAudioManager.requestAudioFocus()
         ) {
-            mediaPlayer.start();
-            PlaybackStateCompat  mPlaybackStateCompat = new PlaybackStateCompat.Builder()
-                    .setState(PlaybackStateCompat.STATE_PLAYING,
-                            mediaPlayer.getCurrentPosition(),
-                            1.0f)
-                    .setActions(getAvailableActions(PlaybackStateCompat.STATE_PLAYING))
-                    .build();
-            mediaSession.setPlaybackState(mPlaybackStateCompat);
-
-            // 更新视频的总进度, setMetadata 会更新MediaControlCompat的onMetadataChanged
-            mediaSession.setMetadata(LocalDataHelper.transformPlayBeanByDuration(getPlayBean(),
-                    mMediaPlayer.duration.toLong()));
-            "mMediaPlayer.getDuration()=${mMediaPlayer.duration}".logd()
+            handlePlay();
         }
+    }
+
+    private void handlePlay() {
         mediaPlayer.start();
-//        mediaSession.setPlaybackState(new PlaybackStateCompat(PlaybackStateCompat.STATE_PLAYING,mediaPlayer.getCurrentPosition(),0,0,0,0,"",System.currentTimeMillis(), List.of(),0,null));
+        register();
+        PlaybackStateCompat mPlaybackStateCompat = new PlaybackStateCompat.Builder()
+                .setState(PlaybackStateCompat.STATE_PLAYING,
+                        mediaPlayer.getCurrentPosition(),
+                        1.0f)
+                .setActions(getAvailableActions(PlaybackStateCompat.STATE_PLAYING))
+                .build();
+        mediaSession.setPlaybackState(mPlaybackStateCompat);
+
+        // 更新视频的总进度, setMetadata 会更新MediaControlCompat的onMetadataChanged
+        sendMetadata();
+    }
+
+    public void sendMetadata() {
+        Song song = PlayQueue.getInstance().getSong();
+        if (song != null) {
+            mediaSession.setMetadata(song.mapToMediaMetadata(mediaPlayer.getDuration()));
+        }
+    }
+
+    private PlaybackStateCompat getPlaybackState() {
+        return mediaSession.getController().getPlaybackState();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+//        if (getPlaybackState().getState() == PlaybackStateCompat.STATE_PLAYING) {
+//            mediaPlayer.pause();
+//            PlaybackStateCompat playbackState = new PlaybackStateCompat.Builder()
+//                    .setState(PlaybackStateCompat.STATE_PAUSED,
+//                            mediaPlayer.getCurrentPosition(),
+//                            1.0f)
+//                    .setActions(getAvailableActions(PlaybackStateCompat.STATE_PAUSED))
+//                    .build();
+//            mediaSession.setPlaybackState(playbackState);
+//            myAudioManager.unregisterBecomingNoisyReceiver();
+//            myAudioManager.abandonAudioFocus();
+//        }
     }
 
     @Override
@@ -88,41 +118,38 @@ public class MediaPlayerSessionCallback extends MyMediaSessionCallback {
     }
 
     @Override
-    public void onPrepareFromUri(Uri uri, Bundle extras) {
-        super.onPrepareFromUri(uri, extras);
-        Log.d(TAG, "onPrepareFromUri: ");
+    public void onPlayFromUri(Uri uri, Bundle extras) {
+        super.onPlayFromUri(uri, extras);
         try {
+            PlayQueue.getInstance().setCurrentIndexByUri(uri);
+            mediaPlayer.reset();
             mediaPlayer.setDataSource(service, uri);
-            mediaPlayer.prepare();
+            PlaybackStateCompat mPlaybackStateCompat = new PlaybackStateCompat.Builder()
+                    .setState(PlaybackStateCompat.STATE_CONNECTING,
+                            mediaPlayer.getCurrentPosition(),
+                            1.0f)
+                    .setActions(getAvailableActions(PlaybackStateCompat.STATE_CONNECTING))
+                    .build();
+            mediaSession.setPlaybackState(mPlaybackStateCompat);
+            mediaPlayer.prepareAsync();
         } catch (IOException e) {
             e.printStackTrace();
         }
-//        mediaPlayer.setOnPreparedListener((player)->{
-//
-//        });
     }
 
-    @Override
-    public void onPlayFromUri(Uri uri, Bundle extras) {
-        super.onPlayFromUri(uri, extras);
-        onPrepareFromUri(uri, extras);
-        onPlay();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        mediaPlayer.pause();
-    }
 
     @Override
     public void onSkipToNext() {
         super.onSkipToNext();
+        PlayQueue.getInstance().moveToNext();
+        onPlayFromUri(PlayQueue.getInstance().getSong().uri, null);
     }
 
     @Override
     public void onSkipToPrevious() {
         super.onSkipToPrevious();
+        PlayQueue.getInstance().moveToPrevious();
+        onPlayFromUri(PlayQueue.getInstance().getSong().uri, null);
     }
 
     @Override
@@ -153,5 +180,15 @@ public class MediaPlayerSessionCallback extends MyMediaSessionCallback {
     @Override
     public void onSetShuffleMode(int shuffleMode) {
         super.onSetShuffleMode(shuffleMode);
+        mediaPlayer.setLooping(false);
+        PlayQueue.getInstance().setShuffleMode(true);
     }
+
+    @Override
+    public void unregister() {
+        super.unregister();
+        mediaPlayer.release();
+        mediaSession.release();
+    }
+
 }

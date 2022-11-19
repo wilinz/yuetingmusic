@@ -96,6 +96,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="@integer/material_motion_duration_long_1">
                 <Button
+                    android:id="@+id/skip_to_previous"
                     android:layout_gravity="center"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -122,6 +123,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="@integer/material_motion_duration_long_1">
                 <Button
+                    android:id="@+id/skip_to_next"
                     android:layout_gravity="center"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

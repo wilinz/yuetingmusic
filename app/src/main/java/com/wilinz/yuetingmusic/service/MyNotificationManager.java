@@ -15,9 +15,12 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableKt;
 import androidx.media.session.MediaButtonReceiver;
 
 import com.wilinz.yuetingmusic.R;
+
+import java.util.Objects;
 
 public class MyNotificationManager {
 
@@ -111,7 +114,11 @@ public class MyNotificationManager {
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId);
 
-        if (largeIcon != null) builder.setLargeIcon(largeIcon);
+        if (largeIcon == null) {
+            largeIcon = DrawableKt.toBitmap(Objects.requireNonNull(ContextCompat.getDrawable(context, R.drawable.noti)), 144, 144, null);
+        }
+        builder.setLargeIcon(largeIcon);
+
 
         builder
                 // 添加当前播放曲目的元数据

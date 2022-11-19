@@ -2,11 +2,9 @@ package com.wilinz.yuetingmusic.ui.main.home;
 
 import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.wilinz.yuetingmusic.data.model.Song;
@@ -16,19 +14,19 @@ import java.util.List;
 
 public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHolder> {
 
-    private List<Song> musics;
+    private List<Song> songs;
     private OnItemClickListener listener;
 
     interface OnItemClickListener {
-        void onItemClick(int index, Song song);
+        void onItemClick(List<Song> songs, int index, Song song);
     }
 
     public MusicAdapter(@NonNull List<Song> musics) {
-        this.musics = musics;
+        this.songs = musics;
     }
 
-    public void setMusics(List<Song> musics) {
-        this.musics = musics;
+    public void setSongs(List<Song> songs) {
+        this.songs = songs;
         notifyDataSetChanged();
     }
 
@@ -53,8 +51,8 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHol
         MusicViewHolder holder = new MusicViewHolder(binding);
         binding.getRoot().setOnClickListener(v -> {
             if (listener != null) {
-                int index = holder.getAdapterPosition();
-                listener.onItemClick(index, musics.get(index));
+                int index = holder.getAbsoluteAdapterPosition();
+                listener.onItemClick(songs, index, songs.get(index));
             }
         });
         return holder;
@@ -64,14 +62,14 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHol
     @Override
     public void onBindViewHolder(@NonNull MusicViewHolder holder, int position) {
         ItemMusicBinding binding = holder.binding;
-        Song music = musics.get(position);
-        binding.name.setText(music.song);
+        Song music = songs.get(position);
+        binding.name.setText(music.name);
         binding.desc.setText(music.singer + "-" + music.album);
     }
 
     @Override
     public int getItemCount() {
-        return musics.size();
+        return songs.size();
     }
 
 

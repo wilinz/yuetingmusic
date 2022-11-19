@@ -20,7 +20,6 @@ abstract class MyMediaSessionCallback extends MediaSessionCompat.Callback {
     @Override
     public void onPlay() {
         super.onPlay();
-        register();
         if (!isStarted) {
             service.startForeground(myNotificationManager.notificationId, myNotificationManager.createPlayerNotification());
         }
@@ -32,21 +31,16 @@ abstract class MyMediaSessionCallback extends MediaSessionCompat.Callback {
         unregister();
     }
 
-    public void unregister(){
-        if (isStarted) {
-            isStarted = false;
-            myAudioManager.unregisterBecomingNoisyReceiver();
-            myAudioManager.abandonAudioFocus();
-            myNotificationManager.unregisterCallback();
-        }
+    public void unregister() {
+        isStarted = false;
+        myAudioManager.unregisterBecomingNoisyReceiver();
+        myAudioManager.abandonAudioFocus();
+        myNotificationManager.unregisterCallback();
     }
 
-    public void register(){
-        if (!isStarted) {
-            isStarted = true;
-            myAudioManager.registerBecomingNoisyReceiver();
-//            myAudioManager.requestAudioFocus();
-            myNotificationManager.registerCallback();
-        }
+    public void register() {
+        isStarted = true;
+        myAudioManager.registerBecomingNoisyReceiver();
+        myNotificationManager.registerCallback();
     }
 }

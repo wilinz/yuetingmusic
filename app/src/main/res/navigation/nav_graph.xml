@@ -36,9 +36,9 @@
         tools:layout="@layout/fragment_main">
 
         <action
-            android:id="@+id/action_to_PlayerFragment"
+            android:id="@+id/action_MainFragment_to_PlayerFragment"
             app:enterAnim="@anim/up_enter"
-
+            app:popExitAnim="@anim/up_exit"
             app:destination="@id/PlayerFragment" />
 
     </fragment>

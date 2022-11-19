@@ -90,7 +90,7 @@ public abstract class MyAudioManager {
                 }
                 pause();
                 // 停止播放前等待 30 秒
-                handler.postDelayed(this::stop, TimeUnit.SECONDS.toMillis(30));
+//                handler.postDelayed(this::stop, TimeUnit.SECONDS.toMillis(30));
                 break;
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
                 synchronized (focusLock) {

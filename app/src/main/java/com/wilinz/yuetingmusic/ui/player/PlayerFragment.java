@@ -30,12 +30,8 @@ import com.wilinz.yuetingmusic.R;
 import com.wilinz.yuetingmusic.data.model.Song;
 import com.wilinz.yuetingmusic.databinding.FragmentPlayerBinding;
 import com.wilinz.yuetingmusic.service.MusicService;
-import com.wilinz.yuetingmusic.service.PlayerEvent;
-import com.wilinz.yuetingmusic.service.PlayerService;
 import com.wilinz.yuetingmusic.util.ScreenUtil;
 import com.wilinz.yuetingmusic.util.TimeUtil;
-
-import org.greenrobot.eventbus.EventBus;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -51,8 +47,6 @@ public class PlayerFragment extends Fragment {
 
     private FragmentPlayerBinding binding;
 
-    private static SimpleDateFormat dateFormat = new SimpleDateFormat("mm:ss", Locale.UK);
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -64,10 +58,7 @@ public class PlayerFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setBottomPadding();
-        Bundle bundle = NavHostFragment.findNavController(this).getCurrentBackStackEntry().getArguments();
-        Song music = bundle.getParcelable(Key.music);
         viewModel = new ViewModelProvider(this).get(PlayerViewModel.class);
-        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         // Create MediaBrowserServiceCompat
         mediaBrowser = new MediaBrowserCompat(requireContext(),
                 new ComponentName(this.requireContext(), MusicService.class),
@@ -82,11 +73,15 @@ public class PlayerFragment extends Fragment {
                 getTransportControls().play();
             } else if (pbState == PlaybackStateCompat.STATE_PLAYING) {
                 getTransportControls().pause();
-            } else {
-                getTransportControls().playFromUri(Uri.parse(music.path), null);
             }
         });
-        binding.currentProgress.setLabelFormatter((value) -> dateFormat.format(value));
+        binding.skipToPrevious.setOnClickListener(v -> {
+            getTransportControls().skipToPrevious();
+        });
+        binding.skipToNext.setOnClickListener(v -> {
+            getTransportControls().skipToNext();
+        });
+        binding.currentProgress.setLabelFormatter((value) -> TimeUtil.setTimeByZero((long) value));
         binding.currentProgress.addOnChangeListener((slider, value, fromUser) -> {
             if (fromUser) getTransportControls().seekTo((long) value);
         });
@@ -151,20 +146,10 @@ public class PlayerFragment extends Fragment {
 
     private void buildTransportControls() {
         // 由于这是一个播放暂停按钮，因此您需要测试当前状态并相应地选择操作
-
-        int pbState = MediaControllerCompat.getMediaController(requireActivity()).getPlaybackState().getState();
-        if (pbState == PlaybackStateCompat.STATE_PLAYING) {
-            MediaControllerCompat.getMediaController(requireActivity()).getTransportControls().pause();
-        } else {
-            MediaControllerCompat.getMediaController(requireActivity()).getTransportControls().play();
-        }
-
         MediaControllerCompat mediaController = MediaControllerCompat.getMediaController(requireActivity());
-
         // 显示初始状态
-        MediaMetadataCompat metadata = mediaController.getMetadata();
-        PlaybackStateCompat pbState1 = mediaController.getPlaybackState();
-
+        updateMetadata(mediaController.getMetadata());
+        updatePlaybackState(mediaController.getPlaybackState());
         // 注册回调以保持同步
         mediaController.registerCallback(controllerCallback);
     }
@@ -175,32 +160,31 @@ public class PlayerFragment extends Fragment {
                 @Override
                 public void onMetadataChanged(MediaMetadataCompat metadata) {
                     if (metadata == null) return;
-                    MediaDescriptionCompat description = metadata.getDescription();
-                    binding.songName.setText(description.getTitle().toString() + " - " + description.getSubtitle());
-                    long duration = metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
-                    if (duration > 0) {
-                        binding.currentProgress.setValueTo(duration);
-                        binding.currentProgressTime.setText(TimeUtil.setTimeByZero(duration));
-                    }
+                    updateMetadata(metadata);
                 }
 
                 @Override
                 public void onPlaybackStateChanged(PlaybackStateCompat state) {
-                    if (state.getState() == PlaybackStateCompat.STATE_NONE || state.getState() == PlaybackStateCompat.STATE_PAUSED) {
-                        binding.playPause.setIcon(ContextCompat.getDrawable(requireContext(), R.drawable.play_arrow_24px));
-                    } else {
-                        binding.playPause.setIcon(ContextCompat.getDrawable(requireContext(), R.drawable.round_pause_24));
-                    }
-
-                    long duration = state.getExtras().getLong(Key.duration, 60000);
-                    duration = duration > 0 ? duration : 60000;
-                    long progress = state.getPosition();
-//                            >= 0 ? event.progress : 0;
-                    binding.currentProgressTime.setText(dateFormat.format(progress));
-                    binding.duration.setText(dateFormat.format(duration));
-                    binding.currentProgress.setValueTo(duration);
-                    binding.currentProgress.setValue(progress);
+                    updatePlaybackState(state);
                 }
             };
+
+    private void updatePlaybackState(PlaybackStateCompat state) {
+        if (state.getState() == PlaybackStateCompat.STATE_NONE || state.getState() == PlaybackStateCompat.STATE_PAUSED) {
+            binding.playPause.setIcon(ContextCompat.getDrawable(requireContext(), R.drawable.play_arrow_24px));
+        } else {
+            binding.playPause.setIcon(ContextCompat.getDrawable(requireContext(), R.drawable.round_pause_24));
+        }
+    }
+
+    private void updateMetadata(MediaMetadataCompat metadata) {
+        MediaDescriptionCompat description = metadata.getDescription();
+        binding.songName.setText(description.getTitle().toString() + " - " + description.getSubtitle());
+        long duration = metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
+        if (duration > 0) {
+            binding.currentProgress.setValueTo(duration);
+            binding.currentProgressTime.setText(TimeUtil.setTimeByZero(duration));
+        }
+    }
 
 }

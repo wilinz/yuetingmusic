@@ -1,7 +1,11 @@
 package com.wilinz.yuetingmusic.ui.main.home;
 
 import android.Manifest;
+import android.content.ComponentName;
 import android.os.Bundle;
+import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,13 +16,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.permissionx.guolindev.PermissionX;
-import com.wilinz.yuetingmusic.Key;
-import com.wilinz.yuetingmusic.R;
 import com.wilinz.yuetingmusic.databinding.FragmentHomeBinding;
+import com.wilinz.yuetingmusic.service.MusicService;
+import com.wilinz.yuetingmusic.service.PlayQueue;
 
 import java.util.List;
 
@@ -27,6 +30,8 @@ public class HomeFragment extends Fragment {
     private HomeViewModel viewModel;
 
     private static String TAG = "HomeFragment";
+
+    private MediaBrowserCompat mediaBrowser;
 
     @Nullable
     @Override
@@ -48,24 +53,55 @@ public class HomeFragment extends Fragment {
         viewModel.getSongs().observe(this.getViewLifecycleOwner(), songs -> {
             MusicAdapter adapter = (MusicAdapter) binding.musicList.getAdapter();
             Log.d(TAG, songs.toString());
-            adapter.setMusics(songs);
+            assert adapter != null;
+            adapter.setSongs(songs);
         });
 
+        mediaBrowser = new MediaBrowserCompat(requireContext(),
+                new ComponentName(this.requireContext(), MusicService.class),
+                connectionCallbacks,
+                null); // optional Bundle
+        mediaBrowser.connect();
+
         MusicAdapter adapter = new MusicAdapter(List.of());
-        adapter.setOnItemClickListener((index, music) -> {
-            Bundle bundle = new Bundle();
-            bundle.putParcelable(Key.music, music);
-            NavHostFragment.findNavController(this).navigate(R.id.action_to_PlayerFragment, bundle);
+        adapter.setOnItemClickListener((songs, index, song) -> {
+            PlayQueue.getInstance().set(songs);
+            MediaControllerCompat mediaController = MediaControllerCompat.getMediaController(requireActivity());
+            mediaController.getTransportControls().playFromUri(song.uri,null);
         });
         binding.musicList.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.musicList.setAdapter(adapter);
 
-        binding.swipeRefresh.setOnRefreshListener(() -> {
-            getMusics();
-        });
+        binding.swipeRefresh.setOnRefreshListener(this::getMusics);
 
         getMusics();
     }
+
+    private final MediaBrowserCompat.ConnectionCallback connectionCallbacks =
+            new MediaBrowserCompat.ConnectionCallback() {
+                @Override
+                public void onConnected() {
+                    // Get the token for the MediaSession
+                    MediaSessionCompat.Token token = mediaBrowser.getSessionToken();
+                    // Create a MediaControllerCompat
+                    MediaControllerCompat mediaController =
+                            new MediaControllerCompat(requireContext(), // Context
+                                    token);
+                    // Save the controller
+                    MediaControllerCompat.setMediaController(requireActivity(), mediaController);
+                    // Finish building the UI
+                }
+
+                @Override
+                public void onConnectionSuspended() {
+                    // 服务已崩溃。禁用传输控制，直到它自动重新连接
+                }
+
+                @Override
+                public void onConnectionFailed() {
+                    // 该服务已拒绝我们的连接
+                }
+            };
 
     public void getMusics() {
         PermissionX.init(requireActivity())
