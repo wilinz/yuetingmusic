@@ -49,12 +49,13 @@ public class MainFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(this).get(MainViewModel.class);
-
         mediaBrowser = new MediaBrowserCompat(requireContext(),
                 new ComponentName(this.requireContext(), MusicService.class),
                 connectionCallbacks,
                 null); // optional Bundle
         mediaBrowser.connect();
+
+
 
         RequestOptions options = new RequestOptions().transform(new RoundedCorners(ScreenUtil.dpToPx(requireContext(), 10)));
         Glide.with(this).load(R.drawable.avatar).apply(options).into(binding.songAvatar);
@@ -124,19 +125,20 @@ public class MainFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
+        super.onDestroyView();
         Log.d(TAG, "onDestroyView: ");
         //（请参阅“与 MediaSession 保持同步”）
-        MediaControllerCompat controller = MediaControllerCompat.getMediaController(requireActivity());
-        if (controller != null) {
+//        MediaControllerCompat controller = MediaControllerCompat.getMediaController(requireActivity());
+        if (mediaController != null) {
             Log.d(TAG, "unregisterCallback");
-            controller.unregisterCallback(controllerCallback);
+            mediaController.unregisterCallback(controllerCallback);
             controllerCallback=null;
         }
         mediaBrowser.disconnect();
-        super.onDestroyView();
+
         binding = null;
     }
-
+    MediaControllerCompat mediaController;
     private final MediaBrowserCompat.ConnectionCallback connectionCallbacks =
             new MediaBrowserCompat.ConnectionCallback() {
                 @Override
@@ -144,11 +146,11 @@ public class MainFragment extends Fragment {
                     // Get the token for the MediaSession
                     MediaSessionCompat.Token token = mediaBrowser.getSessionToken();
                     // Create a MediaControllerCompat
-                    MediaControllerCompat mediaController =
+                    mediaController=
                             new MediaControllerCompat(requireContext(), // Context
                                     token);
                     // Save the controller
-                    MediaControllerCompat.setMediaController(requireActivity(), mediaController);
+//                    MediaControllerCompat.setMediaController(requireActivity(), mediaController);
                     // Finish building the UI
                     buildTransportControls();
                 }
@@ -165,10 +167,24 @@ public class MainFragment extends Fragment {
             };
 
     private void buildTransportControls() {
-        MediaControllerCompat mediaController = MediaControllerCompat.getMediaController(requireActivity());
+//        MediaControllerCompat mediaController = MediaControllerCompat.getMediaController(requireActivity());
         updateUi(mediaController.getMetadata(), mediaController.getPlaybackState());
         // 注册回调以保持同步
         Log.d(TAG, "registerCallback");
+        controllerCallback =
+                new MediaControllerCompat.Callback() {
+                    @SuppressLint("SetTextI18n")
+                    @Override
+                    public void onMetadataChanged(MediaMetadataCompat metadata) {
+                        updateMetadata(metadata);
+                    }
+
+                    @Override
+                    public void onPlaybackStateChanged(PlaybackStateCompat state) {
+                        Log.d(TAG, "onPlaybackStateChanged");
+                        updatePlaybackState(state);
+                    }
+                };
         mediaController.registerCallback(controllerCallback);
     }
 
@@ -190,18 +206,5 @@ public class MainFragment extends Fragment {
         }
     }
 
-    MediaControllerCompat.Callback controllerCallback =
-            new MediaControllerCompat.Callback() {
-                @SuppressLint("SetTextI18n")
-                @Override
-                public void onMetadataChanged(MediaMetadataCompat metadata) {
-                    updateMetadata(metadata);
-                }
-
-                @Override
-                public void onPlaybackStateChanged(PlaybackStateCompat state) {
-                    Log.d(TAG, "onPlaybackStateChanged");
-                    updatePlaybackState(state);
-                }
-            };
+    MediaControllerCompat.Callback controllerCallback;
 }

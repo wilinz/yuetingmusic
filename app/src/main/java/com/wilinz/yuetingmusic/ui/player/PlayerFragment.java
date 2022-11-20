@@ -13,6 +13,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
@@ -36,6 +38,11 @@ import com.wilinz.yuetingmusic.util.TimeUtil;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observable;
 
 public class PlayerFragment extends Fragment {
 
@@ -46,6 +53,8 @@ public class PlayerFragment extends Fragment {
     private PlayerViewModel viewModel;
 
     private FragmentPlayerBinding binding;
+
+    private Handler handler;
 
     @Nullable
     @Override
@@ -66,8 +75,9 @@ public class PlayerFragment extends Fragment {
                 null); // optional Bundle
         mediaBrowser.connect();
 
+        handler = new Handler(Looper.getMainLooper());
         binding.playPause.setOnClickListener(v -> {
-            int pbState = getMediaController().getPlaybackState().getState();
+            int pbState = mediaController.getPlaybackState().getState();
             Log.d(TAG, Integer.valueOf(pbState).toString());
             if (pbState == PlaybackStateCompat.STATE_PAUSED) {
                 getTransportControls().play();
@@ -93,20 +103,17 @@ public class PlayerFragment extends Fragment {
     }
 
     private MediaControllerCompat.TransportControls getTransportControls() {
-        return getMediaController().getTransportControls();
-    }
-
-    private MediaControllerCompat getMediaController() {
-        return MediaControllerCompat.getMediaController(requireActivity());
+        return mediaController.getTransportControls();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-
+        if (timer != null) timer.cancel();
         //（请参阅“与 MediaSession 保持同步”）
-        if (MediaControllerCompat.getMediaController(requireActivity()) != null) {
-            MediaControllerCompat.getMediaController(requireActivity()).unregisterCallback(controllerCallback);
+        if (mediaController != null) {
+            mediaController.unregisterCallback(controllerCallback);
+            controllerCallback = null;
         }
         mediaBrowser.disconnect();
 
@@ -122,12 +129,11 @@ public class PlayerFragment extends Fragment {
                     MediaSessionCompat.Token token = mediaBrowser.getSessionToken();
 
                     // Create a MediaControllerCompat
-                    MediaControllerCompat mediaController =
+                    mediaController =
                             new MediaControllerCompat(requireContext(), // Context
                                     token);
 
                     // Save the controller
-                    MediaControllerCompat.setMediaController(requireActivity(), mediaController);
 
                     // Finish building the UI
                     buildTransportControls();
@@ -144,40 +150,57 @@ public class PlayerFragment extends Fragment {
                 }
             };
 
+    MediaControllerCompat mediaController;
+
     private void buildTransportControls() {
         // 由于这是一个播放暂停按钮，因此您需要测试当前状态并相应地选择操作
-        MediaControllerCompat mediaController = MediaControllerCompat.getMediaController(requireActivity());
         // 显示初始状态
         updateMetadata(mediaController.getMetadata());
         updatePlaybackState(mediaController.getPlaybackState());
         // 注册回调以保持同步
+        controllerCallback =
+                new MediaControllerCompat.Callback() {
+                    @SuppressLint("SetTextI18n")
+                    @Override
+                    public void onMetadataChanged(MediaMetadataCompat metadata) {
+                        if (metadata == null) return;
+                        updateMetadata(metadata);
+                    }
+
+                    @Override
+                    public void onPlaybackStateChanged(PlaybackStateCompat state) {
+                        updatePlaybackState(state);
+                    }
+                };
         mediaController.registerCallback(controllerCallback);
     }
 
-    MediaControllerCompat.Callback controllerCallback =
-            new MediaControllerCompat.Callback() {
-                @SuppressLint("SetTextI18n")
-                @Override
-                public void onMetadataChanged(MediaMetadataCompat metadata) {
-                    if (metadata == null) return;
-                    updateMetadata(metadata);
-                }
-
-                @Override
-                public void onPlaybackStateChanged(PlaybackStateCompat state) {
-                    updatePlaybackState(state);
-                }
-            };
+    MediaControllerCompat.Callback controllerCallback;
 
     private void updatePlaybackState(PlaybackStateCompat state) {
         if (state.getState() == PlaybackStateCompat.STATE_NONE || state.getState() == PlaybackStateCompat.STATE_PAUSED) {
             binding.playPause.setIcon(ContextCompat.getDrawable(requireContext(), R.drawable.play_arrow_24px));
+            if (timer != null) timer.cancel();
         } else {
             binding.playPause.setIcon(ContextCompat.getDrawable(requireContext(), R.drawable.round_pause_24));
+            timer = new Timer();
+            timer.schedule(
+                    new TimerTask() {
+                        @Override
+                        public void run() {
+                            handler.post(() -> {
+                                long position = mediaController.getPlaybackState().getPosition();
+                                binding.currentProgress.setValue(position);
+                                binding.currentProgressTime.setText(TimeUtil.setTimeByZero(position));
+                            });
+                        }
+                    }, 0, 1000
+            );
         }
     }
 
     private void updateMetadata(MediaMetadataCompat metadata) {
+        if (metadata == null) return;
         MediaDescriptionCompat description = metadata.getDescription();
         binding.songName.setText(description.getTitle().toString() + " - " + description.getSubtitle());
         long duration = metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
@@ -187,4 +210,5 @@ public class PlayerFragment extends Fragment {
         }
     }
 
+    private Timer timer;
 }

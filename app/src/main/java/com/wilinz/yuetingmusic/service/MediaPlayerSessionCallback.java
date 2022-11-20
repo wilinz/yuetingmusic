@@ -47,7 +47,7 @@ public class MediaPlayerSessionCallback extends MyMediaSessionCallback {
         long actions = (PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
                 | PlaybackStateCompat.ACTION_SKIP_TO_NEXT
                 | PlaybackStateCompat.ACTION_REWIND
-                | PlaybackStateCompat.ACTION_FAST_FORWARD);
+                | PlaybackStateCompat.ACTION_SEEK_TO);
 
         if (state == PlaybackStateCompat.STATE_PLAYING) {
             actions = actions | PlaybackStateCompat.ACTION_PAUSE;
@@ -164,6 +164,13 @@ public class MediaPlayerSessionCallback extends MyMediaSessionCallback {
         } else {
             mediaPlayer.seekTo((int) pos);
         }
+        PlaybackStateCompat mPlaybackStateCompat = new PlaybackStateCompat.Builder()
+                .setState(PlaybackStateCompat.STATE_PLAYING,
+                        mediaPlayer.getCurrentPosition(),
+                        1.0f)
+                .setActions(getAvailableActions(PlaybackStateCompat.STATE_PLAYING))
+                .build();
+        mediaSession.setPlaybackState(mPlaybackStateCompat);
     }
 
     @Override
