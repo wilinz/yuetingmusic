@@ -2,6 +2,7 @@ package com.wilinz.yuetingmusic.service;
 
 import android.net.Uri;
 
+import androidx.annotation.Nullable;
 import androidx.core.graphics.drawable.IconKt;
 
 import com.wilinz.yuetingmusic.data.model.Song;
@@ -55,9 +56,10 @@ public class PlayQueue {
         }
     }
 
+    @Nullable
     public Song getSong() {
         synchronized (this) {
-            if (currentIndex>0) return getQueue().get(currentIndex);
+            if (currentIndex > 0) return getQueue().get(currentIndex);
             return null;
         }
     }
@@ -89,7 +91,7 @@ public class PlayQueue {
         }
     }
 
-    private boolean isShuffleMode = false;
+    private boolean isShuffleMode = true;
 
     public int getCurrentIndex() {
         return currentIndex;

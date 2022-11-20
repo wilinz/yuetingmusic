@@ -19,6 +19,9 @@ public class MediaPlayerSessionCallback extends MyMediaSessionCallback {
     private final MediaPlayer mediaPlayer = new MediaPlayer();
     private final MediaSessionCompat mediaSession;
 
+    private boolean isPreparedSeek = false;
+    private long preparedSeekPosition = 0;
+
     public MediaPlayerSessionCallback(Service service, MyAudioManager myAudioManager, MyNotificationManager myNotificationManager, MediaSessionCompat mediaSession) {
         super(service, myAudioManager, myNotificationManager);
         this.mediaSession = mediaSession;
@@ -32,6 +35,10 @@ public class MediaPlayerSessionCallback extends MyMediaSessionCallback {
 
     private void onPreparedListener(MediaPlayer player) {
         onPlay();
+        if (isPreparedSeek) {
+            isPreparedSeek = false;
+            onSeekTo(preparedSeekPosition);
+        }
     }
 
     private void onCompletionListener(MediaPlayer player) {
@@ -159,18 +166,25 @@ public class MediaPlayerSessionCallback extends MyMediaSessionCallback {
 //        public static final int SEEK_NEXT_SYNC        = 0x01; //同步播放模式，会后一点播放
 //        public static final int SEEK_CLOSEST_SYNC     = 0x02; //同步播放模式，精确播放
 //        public static final int SEEK_CLOSEST          = 0x03; //异步播放模式，精确播放
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            mediaPlayer.seekTo(pos, MediaPlayer.SEEK_CLOSEST);
+
+        if (getPlaybackState().getState() == PlaybackStateCompat.STATE_PLAYING) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                mediaPlayer.seekTo(pos, MediaPlayer.SEEK_CLOSEST);
+            } else {
+                mediaPlayer.seekTo((int) pos);
+            }
+            PlaybackStateCompat mPlaybackStateCompat = new PlaybackStateCompat.Builder()
+                    .setState(PlaybackStateCompat.STATE_PLAYING,
+                            mediaPlayer.getCurrentPosition(),
+                            1.0f)
+                    .setActions(getAvailableActions(PlaybackStateCompat.STATE_PLAYING))
+                    .build();
+            mediaSession.setPlaybackState(mPlaybackStateCompat);
         } else {
-            mediaPlayer.seekTo((int) pos);
+            isPreparedSeek = true;
+            preparedSeekPosition = pos;
         }
-        PlaybackStateCompat mPlaybackStateCompat = new PlaybackStateCompat.Builder()
-                .setState(PlaybackStateCompat.STATE_PLAYING,
-                        mediaPlayer.getCurrentPosition(),
-                        1.0f)
-                .setActions(getAvailableActions(PlaybackStateCompat.STATE_PLAYING))
-                .build();
-        mediaSession.setPlaybackState(mPlaybackStateCompat);
+
     }
 
     @Override

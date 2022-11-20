@@ -32,6 +32,7 @@ import com.wilinz.yuetingmusic.R;
 import com.wilinz.yuetingmusic.data.model.Song;
 import com.wilinz.yuetingmusic.databinding.FragmentPlayerBinding;
 import com.wilinz.yuetingmusic.service.MusicService;
+import com.wilinz.yuetingmusic.util.RxTimer;
 import com.wilinz.yuetingmusic.util.ScreenUtil;
 import com.wilinz.yuetingmusic.util.TimeUtil;
 
@@ -54,8 +55,6 @@ public class PlayerFragment extends Fragment {
 
     private FragmentPlayerBinding binding;
 
-    private Handler handler;
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -75,7 +74,6 @@ public class PlayerFragment extends Fragment {
                 null); // optional Bundle
         mediaBrowser.connect();
 
-        handler = new Handler(Looper.getMainLooper());
         binding.playPause.setOnClickListener(v -> {
             int pbState = mediaController.getPlaybackState().getState();
             Log.d(TAG, Integer.valueOf(pbState).toString());
@@ -157,6 +155,7 @@ public class PlayerFragment extends Fragment {
         // 显示初始状态
         updateMetadata(mediaController.getMetadata());
         updatePlaybackState(mediaController.getPlaybackState());
+        updatePosition();
         // 注册回调以保持同步
         controllerCallback =
                 new MediaControllerCompat.Callback() {
@@ -183,19 +182,16 @@ public class PlayerFragment extends Fragment {
             if (timer != null) timer.cancel();
         } else {
             binding.playPause.setIcon(ContextCompat.getDrawable(requireContext(), R.drawable.round_pause_24));
-            timer = new Timer();
-            timer.schedule(
-                    new TimerTask() {
-                        @Override
-                        public void run() {
-                            handler.post(() -> {
-                                long position = mediaController.getPlaybackState().getPosition();
-                                binding.currentProgress.setValue(position);
-                                binding.currentProgressTime.setText(TimeUtil.setTimeByZero(position));
-                            });
-                        }
-                    }, 0, 1000
-            );
+            timer = new RxTimer();
+            timer.interval(1000, (number) -> updatePosition());
+        }
+    }
+
+    private void updatePosition() {
+        long position = mediaController.getPlaybackState().getPosition();
+        if (binding != null) {
+            binding.currentProgress.setValue(position);
+            binding.currentProgressTime.setText(TimeUtil.setTimeByZero(position));
         }
     }
 
@@ -210,5 +206,5 @@ public class PlayerFragment extends Fragment {
         }
     }
 
-    private Timer timer;
+    private RxTimer timer;
 }

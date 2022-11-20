@@ -3,7 +3,9 @@ package com.wilinz.yuetingmusic.service;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.support.v4.media.MediaDescriptionCompat;
@@ -18,6 +20,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableKt;
 import androidx.media.session.MediaButtonReceiver;
 
+import com.wilinz.yuetingmusic.MainActivity;
 import com.wilinz.yuetingmusic.R;
 
 import java.util.Objects;
@@ -119,6 +122,7 @@ public class MyNotificationManager {
         }
         builder.setLargeIcon(largeIcon);
 
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, new Intent(context, MainActivity.class), PendingIntent.FLAG_MUTABLE);
 
         builder
                 // 添加当前播放曲目的元数据
@@ -127,7 +131,8 @@ public class MyNotificationManager {
                 .setSubText(desc)
 
                 // 通过单击通知启用启动播放器
-                .setContentIntent(controller.getSessionActivity())
+
+                .setContentIntent(pendingIntent)
 
                 // 滑动通知时停止服务
                 .setDeleteIntent(MediaButtonReceiver.buildMediaButtonPendingIntent(context,
