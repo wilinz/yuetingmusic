@@ -1,12 +1,8 @@
 package com.wilinz.yuetingmusic.ui.main;
 
 import android.annotation.SuppressLint;
-import android.content.ComponentName;
 import android.os.Bundle;
-import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
-import android.support.v4.media.session.MediaControllerCompat;
-import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,10 +22,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.wilinz.yuetingmusic.R;
 import com.wilinz.yuetingmusic.databinding.FragmentMainBinding;
-import com.wilinz.yuetingmusic.service.MusicService;
 import com.wilinz.yuetingmusic.util.ScreenUtil;
-
-import java.util.Objects;
 
 public class MainFragment extends Fragment {
     private static final String TAG = "MainFragment";
@@ -50,6 +43,7 @@ public class MainFragment extends Fragment {
         viewModel = new ViewModelProvider(this).get(MainViewModel.class);
         viewModel.getPlaybackStateLiveData().observe(this.getViewLifecycleOwner(), this::updatePlaybackState);
         viewModel.getMediaMetadataLiveData().observe(this.getViewLifecycleOwner(), this::updateMetadata);
+        viewModel.getPlayPositionLiveData().observe(this.getViewLifecycleOwner(), this::updatePosition);
         RequestOptions options = new RequestOptions().transform(new RoundedCorners(ScreenUtil.dpToPx(requireContext(), 10)));
         Glide.with(this).load(R.drawable.avatar).apply(options).into(binding.songAvatar);
 
@@ -57,6 +51,16 @@ public class MainFragment extends Fragment {
         setBottomNavigation();
         binding.songBar.setOnClickListener((v) -> {
             NavHostFragment.findNavController(this).navigate(R.id.action_MainFragment_to_PlayerFragment);
+        });
+        binding.playPause.setOnClickListener(v->{
+            if (viewModel.getPlaybackState().getState() == PlaybackStateCompat.STATE_PAUSED) {
+                viewModel.play();
+            } else if (viewModel.getPlaybackState().getState() == PlaybackStateCompat.STATE_PLAYING ){
+                viewModel.pause();
+            }else {
+                //todo
+//                playFromHistory
+            }
         });
     }
 
@@ -107,7 +111,6 @@ public class MainFragment extends Fragment {
         });
     }
 
-
     @Override
     public void onDestroyView() {
         super.onDestroyView();
@@ -115,6 +118,7 @@ public class MainFragment extends Fragment {
     }
 
     private void updateMetadata(MediaMetadataCompat metadata) {
+        Log.d(TAG, "updateMetadata: ");
         if (metadata == null) return;
         binding.songName.setText(metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
     }
@@ -124,6 +128,19 @@ public class MainFragment extends Fragment {
             binding.playPause.setIcon(ContextCompat.getDrawable(requireContext(), R.drawable.play_arrow_24px));
         } else {
             binding.playPause.setIcon(ContextCompat.getDrawable(requireContext(), R.drawable.round_pause_24));
+        }
+    }
+
+    private void updatePosition(long position) {
+        MediaMetadataCompat mediaMetadata = viewModel.getMediaMetadataLiveData().getValue();
+        if (mediaMetadata != null) {
+            long duration = mediaMetadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
+            int parent = (int) ((position / (float) duration) * 100 + 0.5);
+//            Log.d(TAG, "updatePosition: " + position + "/" + duration + ": " + parent + " %");
+//            binding.progressIndicator.setSecondaryProgress(100);
+//            binding.progressIndicator.setSecondaryProgressTintMode(true);
+//            binding.progressIndicator.
+            binding.progressIndicator.setProgress(parent);
         }
     }
 

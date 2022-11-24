@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-sdk tools:overrideLibrary="com.github.guilhe.views.circularprogress"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
@@ -18,7 +19,7 @@
         android:theme="@style/Theme.Yuetingmusic"
         tools:targetApi="31">
         <service
-            android:name=".service.MusicService"
+            android:name=".player.MusicService"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
@@ -26,7 +27,7 @@
             </intent-filter>
         </service>
         <service
-            android:name=".service.PlayerService"
+            android:name=".player.PlayerService"
             android:enabled="true"
             android:exported="true"
             android:foregroundServiceType="mediaPlayback" />

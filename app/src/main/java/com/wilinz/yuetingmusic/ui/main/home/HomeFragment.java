@@ -3,10 +3,10 @@ package com.wilinz.yuetingmusic.ui.main.home;
 import android.Manifest;
 import android.content.ComponentName;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,10 +19,12 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.permissionx.guolindev.PermissionX;
+import com.wilinz.yuetingmusic.Key;
 import com.wilinz.yuetingmusic.databinding.FragmentHomeBinding;
-import com.wilinz.yuetingmusic.service.MusicService;
-import com.wilinz.yuetingmusic.service.PlayQueue;
+import com.wilinz.yuetingmusic.player.MusicService;
+import com.wilinz.yuetingmusic.util.LogUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
@@ -52,7 +54,7 @@ public class HomeFragment extends Fragment {
         });
         viewModel.getSongs().observe(this.getViewLifecycleOwner(), songs -> {
             MusicAdapter adapter = (MusicAdapter) binding.musicList.getAdapter();
-            Log.d(TAG, songs.toString());
+            LogUtil.d(TAG, songs.toString());
             assert adapter != null;
             adapter.setSongs(songs);
         });
@@ -65,9 +67,10 @@ public class HomeFragment extends Fragment {
 
         MusicAdapter adapter = new MusicAdapter(List.of());
         adapter.setOnItemClickListener((songs, index, song) -> {
-            PlayQueue.getInstance().set(songs);
             MediaControllerCompat mediaController = MediaControllerCompat.getMediaController(requireActivity());
-            mediaController.getTransportControls().playFromUri(song.uri,null);
+            Bundle bundle = new Bundle();
+            bundle.putParcelableArrayList(Key.songList, (ArrayList<? extends Parcelable>) songs);
+            mediaController.getTransportControls().playFromUri(song.uri,bundle);
         });
         binding.musicList.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.musicList.setAdapter(adapter);

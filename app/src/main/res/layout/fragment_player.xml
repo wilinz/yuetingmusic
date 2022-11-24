@@ -82,11 +82,12 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="@integer/material_motion_duration_long_1">
-                <Button
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/switch_play_mode"
                     android:layout_gravity="center"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    style="?attr/materialIconButtonStyle"
+                    style="@style/Widget.Material3.Button.IconButtonFixed"
                     app:icon="@drawable/round_repeat_24"/>
 
             </FrameLayout>
@@ -100,7 +101,7 @@
                     android:layout_gravity="center"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    style="?attr/materialIconButtonStyle"
+                    style="@style/Widget.Material3.Button.IconButtonFixed"
                     app:icon="@drawable/skip_previous"/>
 
             </FrameLayout>
@@ -111,7 +112,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/play_pause"
-                    style="?attr/materialIconButtonStyle"
+                    style="@style/Widget.Material3.Button.IconButtonFixed"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -127,7 +128,7 @@
                     android:layout_gravity="center"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    style="?attr/materialIconButtonStyle"
+                    style="@style/Widget.Material3.Button.IconButtonFixed"
                     app:icon="@drawable/skip_next"/>
 
             </FrameLayout>
@@ -139,7 +140,7 @@
                     android:layout_gravity="center"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    style="?attr/materialIconButtonStyle"
+                    style="@style/Widget.Material3.Button.IconButtonFixed"
                     app:icon="@drawable/round_queue_music_24"/>
 
             </FrameLayout>

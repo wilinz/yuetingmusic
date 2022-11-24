@@ -59,4 +59,5 @@
     <string name="skip_previous">上一曲</string>
     <string name="skip_next">下一曲</string>
     <string name="playback_control_notification">播放控制通知</string>
+    <string name="searchbar_hint">搜索音乐</string>
 </resources>

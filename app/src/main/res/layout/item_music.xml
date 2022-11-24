@@ -42,12 +42,6 @@
                 android:text="作者-专辑"/>
 
         </LinearLayout>
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="?attr/materialIconButtonStyle"
-            app:icon="@drawable/play_arrow_24px"/>
-
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>

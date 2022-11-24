@@ -63,8 +63,8 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHol
     public void onBindViewHolder(@NonNull MusicViewHolder holder, int position) {
         ItemMusicBinding binding = holder.binding;
         Song music = songs.get(position);
-        binding.name.setText(music.name);
-        binding.desc.setText(music.singer + "-" + music.album);
+        binding.name.setText(music.title);
+        binding.desc.setText(music.artist + "-" + music.album);
     }
 
     @Override

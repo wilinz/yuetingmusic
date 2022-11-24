@@ -18,9 +18,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 
+import com.wilinz.yuetingmusic.Constant;
+import com.wilinz.yuetingmusic.Key;
 import com.wilinz.yuetingmusic.R;
+import com.wilinz.yuetingmusic.constant.PlayMode;
 import com.wilinz.yuetingmusic.databinding.FragmentPlayerBinding;
 import com.wilinz.yuetingmusic.ui.commen.MediaControllerViewModel;
+import com.wilinz.yuetingmusic.util.LogUtil;
 import com.wilinz.yuetingmusic.util.ScreenUtil;
 import com.wilinz.yuetingmusic.util.TimeUtil;
 
@@ -47,10 +51,10 @@ public class PlayerFragment extends Fragment {
         viewModel.getPlayPositionLiveData().observe(this.getViewLifecycleOwner(), this::updatePosition);
         viewModel.getPlaybackStateLiveData().observe(this.getViewLifecycleOwner(), this::updatePlaybackState);
         viewModel.getMediaMetadataLiveData().observe(this.getViewLifecycleOwner(), this::updateMetadata);
-
+        viewModel.getPlayModeLiveData().observe(this.getViewLifecycleOwner(), this::updatePlayMode);
         binding.playPause.setOnClickListener(v -> {
             int pbState = viewModel.getPlaybackState().getState();
-            Log.d(TAG, Integer.valueOf(pbState).toString());
+            LogUtil.d(TAG, Integer.valueOf(pbState).toString());
             if (pbState == PlaybackStateCompat.STATE_PAUSED) {
                 viewModel.play();
             } else if (pbState == PlaybackStateCompat.STATE_PLAYING) {
@@ -67,6 +71,18 @@ public class PlayerFragment extends Fragment {
         binding.currentProgress.addOnChangeListener((slider, value, fromUser) -> {
             if (fromUser) viewModel.seekTo((long) value);
         });
+        binding.switchPlayMode.setOnClickListener(v -> {
+            Integer playModeInteger = viewModel.getPlayModeLiveData().getValue();
+            int playMode = playModeInteger != null ? playModeInteger : PlayMode.ORDERLY;
+            if (playMode == PlayMode.ORDERLY) {
+                viewModel.getMediaController().getTransportControls().setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ONE);
+            } else if (playMode == PlayMode.SINGLE_LOOP) {
+                viewModel.getMediaController().getTransportControls().setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_ALL);
+            } else {
+                viewModel.getMediaController().getTransportControls().setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ALL);
+            }
+            viewModel.getMediaController().getTransportControls().setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_ALL);
+        });
     }
 
     private void setBottomPadding() {
@@ -78,6 +94,18 @@ public class PlayerFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
 
+    }
+
+    private void updatePlayMode(int playMode) {
+        int resId = 0;
+        if (playMode == PlayMode.ORDERLY) {
+            resId = R.drawable.round_repeat_24;
+        } else if (playMode == PlayMode.SINGLE_LOOP) {
+            resId = R.drawable.round_repeat_one_24;
+        } else {
+            resId = R.drawable.round_shuffle_24;
+        }
+        binding.switchPlayMode.setIcon(ContextCompat.getDrawable(requireContext(), resId));
     }
 
     private void updatePlaybackState(PlaybackStateCompat state) {

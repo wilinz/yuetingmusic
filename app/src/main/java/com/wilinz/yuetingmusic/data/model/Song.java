@@ -9,16 +9,32 @@ import android.support.v4.media.MediaMetadataCompat;
 
 import androidx.annotation.NonNull;
 
+import com.google.android.exoplayer2.MediaItem;
+import com.google.android.exoplayer2.MediaMetadata;
+
 import java.util.Objects;
 
 public class Song implements Parcelable {
+
+    public MediaItem mapToExoPlayerMediaItem() {
+        MediaMetadata mediaMetadata = new MediaMetadata.Builder()
+                .setTitle(title)
+                .setAlbumTitle(album)
+                .setArtist(artist)
+                .build();
+        return new MediaItem.Builder()
+                .setMediaId(uri.toString())
+                .setUri(uri)
+                .setMediaMetadata(mediaMetadata)
+                .build();
+    }
 
     public MediaBrowserCompat.MediaItem mapToMediaItem() {
         MediaDescriptionCompat desc =
                 new MediaDescriptionCompat.Builder()
                         .setMediaId(this.uri.toString())
-                        .setTitle(this.name)
-                        .setSubtitle(this.singer)
+                        .setTitle(this.title)
+                        .setSubtitle(this.artist)
                         .build();
 
         return new MediaBrowserCompat.MediaItem(desc,
@@ -29,11 +45,13 @@ public class Song implements Parcelable {
         long duration = durationArg.length > 0 ? durationArg[0] : this.duration;
         return new MediaMetadataCompat.Builder()
                 .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, this.uri.toString())
-                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, this.name)
-                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, this.singer)
+                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, this.title)
+                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, this.artist)
                 .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, duration)
                 .build();
     }
+
+
 
     @Override
     public boolean equals(Object o) {
@@ -44,16 +62,16 @@ public class Song implements Parcelable {
 
         if (duration != song1.duration) return false;
         if (size != song1.size) return false;
-        if (!Objects.equals(name, song1.name)) return false;
-        if (!Objects.equals(singer, song1.singer)) return false;
+        if (!Objects.equals(title, song1.title)) return false;
+        if (!Objects.equals(artist, song1.artist)) return false;
         if (!Objects.equals(album, song1.album)) return false;
         return Objects.equals(uri, song1.uri);
     }
 
     @Override
     public int hashCode() {
-        int result = name != null ? name.hashCode() : 0;
-        result = 31 * result + (singer != null ? singer.hashCode() : 0);
+        int result = title != null ? title.hashCode() : 0;
+        result = 31 * result + (artist != null ? artist.hashCode() : 0);
         result = 31 * result + (album != null ? album.hashCode() : 0);
         result = 31 * result + (uri != null ? uri.hashCode() : 0);
         result = 31 * result + duration;
@@ -68,8 +86,8 @@ public class Song implements Parcelable {
     @Override
     public String toString() {
         return "Song{" +
-                "song='" + name + '\'' +
-                ", singer='" + singer + '\'' +
+                "song='" + title + '\'' +
+                ", singer='" + artist + '\'' +
                 ", album='" + album + '\'' +
                 ", path='" + uri + '\'' +
                 ", duration=" + duration +
@@ -77,8 +95,8 @@ public class Song implements Parcelable {
                 '}';
     }
 
-    public String name;
-    public String singer;
+    public String title;
+    public String artist;
     public String album;
     public Uri uri;
     public int duration;
@@ -91,8 +109,8 @@ public class Song implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.name);
-        dest.writeString(this.singer);
+        dest.writeString(this.title);
+        dest.writeString(this.artist);
         dest.writeString(this.album);
         dest.writeParcelable(this.uri, flags);
         dest.writeInt(this.duration);
@@ -100,8 +118,8 @@ public class Song implements Parcelable {
     }
 
     public void readFromParcel(Parcel source) {
-        this.name = source.readString();
-        this.singer = source.readString();
+        this.title = source.readString();
+        this.artist = source.readString();
         this.album = source.readString();
         this.uri = source.readParcelable(Uri.class.getClassLoader());
         this.duration = source.readInt();
@@ -109,8 +127,8 @@ public class Song implements Parcelable {
     }
 
     protected Song(Parcel in) {
-        this.name = in.readString();
-        this.singer = in.readString();
+        this.title = in.readString();
+        this.artist = in.readString();
         this.album = in.readString();
         this.uri = in.readParcelable(Uri.class.getClassLoader());
         this.duration = in.readInt();

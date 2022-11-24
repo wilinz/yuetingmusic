@@ -5,11 +5,15 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.MediaDescriptionCompat;
+import android.support.v4.media.MediaMetadataCompat;
 
+import com.google.android.exoplayer2.MediaItem;
+import com.google.android.exoplayer2.MediaMetadata;
 import com.wilinz.yuetingmusic.data.model.Song;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -36,9 +40,9 @@ public class MediaUtil {
             while (cursor.moveToNext()) {
                 Song song = new Song();
                 //歌曲名称
-                song.name = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
+                song.title = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
                 //歌手
-                song.singer = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
+                song.artist = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
                 //专辑名
                 song.album = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM));
                 //歌曲路径
@@ -50,10 +54,10 @@ public class MediaUtil {
 
                 if (song.size > 1024 * 500) {
                     // 注释部分是切割标题，分离出歌曲名和歌手 （本地媒体库读取的歌曲信息不规范）
-                    if (song.name.contains("-")) {
-                        String[] str = song.name.split("-");
-                        song.singer = str[0];
-                        song.name = str[1];
+                    if (song.title.contains("-")) {
+                        String[] str = song.title.split("-");
+                        song.artist = str[0];
+                        song.title = str[1];
                     }
                     list.add(song);
                 }
@@ -75,4 +79,25 @@ public class MediaUtil {
         ByteStreamsKt.copyTo(input, output, 8192);
     }
 
+    public static MediaBrowserCompat.MediaItem getMediaBrowserMediaItem(MediaItem exoMediaItem) {
+        MediaMetadata mediaMetadata = exoMediaItem.mediaMetadata;
+        MediaDescriptionCompat desc =
+                new MediaDescriptionCompat.Builder()
+                        .setMediaId(exoMediaItem.mediaId)
+                        .setTitle(mediaMetadata.title)
+                        .setSubtitle(mediaMetadata.subtitle)
+                        .build();
+
+        return new MediaBrowserCompat.MediaItem(desc,
+                MediaBrowserCompat.MediaItem.FLAG_PLAYABLE);
+    }
+
+    public static MediaMetadataCompat getMediaMetadataCompat(MediaItem mediaItem, long duration){
+        return new MediaMetadataCompat.Builder()
+                .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, mediaItem.mediaId)
+                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, mediaItem.mediaMetadata.title+"")
+                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, mediaItem.mediaMetadata.artist+"")
+                .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, duration)
+                .build();
+    }
 }

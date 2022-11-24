@@ -7,6 +7,12 @@
         <item name="toolbarStyle">@style/Widget.App.Toolbar</item>
     </style>
 
+    <style name="Widget.Material3.Button.IconButtonFixed" parent="Widget.Material3.Button.IconButton">
+        <item name="android:minWidth">24dp</item>
+        <item name="iconSize">24dp</item>
+        <item name="materialThemeOverlay">@style/ThemeOverlay.Material3.Button.IconButton</item>
+    </style>
+
     <style name="Theme.Yuetingmusic" parent="Base.Theme.Yuetingmusic" />
 
     <color name="my_light_primary">#29B6F6</color>
