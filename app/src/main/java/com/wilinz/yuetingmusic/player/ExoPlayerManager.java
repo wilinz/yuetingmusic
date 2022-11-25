@@ -1,23 +1,29 @@
 package com.wilinz.yuetingmusic.player;
 
 import android.app.Service;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
+
+import androidx.annotation.Nullable;
 
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
+import com.google.android.exoplayer2.MediaMetadata;
+import com.google.android.exoplayer2.PlaybackException;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.source.ShuffleOrder;
 import com.wilinz.yuetingmusic.Key;
+import com.wilinz.yuetingmusic.Pref;
 import com.wilinz.yuetingmusic.constant.PlayMode;
 import com.wilinz.yuetingmusic.data.model.Song;
 import com.wilinz.yuetingmusic.util.LogUtil;
 import com.wilinz.yuetingmusic.util.MediaUtil;
 
+import java.util.Arrays;
 import java.util.List;
 
 import kotlin.collections.CollectionsKt;
@@ -48,12 +54,45 @@ public class ExoPlayerManager extends MyMediaSessionCallback {
     }
 
     private void initPlayer(MediaSessionCompat mediaSession) {
-        exoPlayer.setRepeatMode(Player.REPEAT_MODE_ALL);
+        setPlayMode(Pref.getInstance(service.getApplication()).getPlayMode());
         exoPlayer.addListener(new Player.Listener() {
             @Override
             public void onIsPlayingChanged(boolean isPlaying) {
                 Player.Listener.super.onIsPlayingChanged(isPlaying);
-                if (isPlaying) sendMetadata();
+                if (isPlaying) {
+                    sendMetadata();
+                    updatePlaybackState(PlaybackStateCompat.STATE_PLAYING);
+                }
+            }
+
+            @Override
+            public void onMediaMetadataChanged(MediaMetadata mediaMetadata) {
+                Player.Listener.super.onMediaMetadataChanged(mediaMetadata);
+                sendMetadata();
+                updatePlaybackState(PlaybackStateCompat.STATE_PLAYING);
+            }
+
+            @Override
+            public void onPlayerError(PlaybackException error) {
+                Player.Listener.super.onPlayerError(error);
+                error.printStackTrace();
+                updatePlaybackState(PlaybackStateCompat.STATE_PAUSED);
+//                exoPlayer.setMediaItem(exoPlayer.getCurrentMediaItem(), exoPlayer.getCurrentPosition());
+//                exoPlayer.prepare();
+//                onPlay();
+                Log.d(TAG, "onPlayerError: ");
+            }
+
+            @Override
+            public void onPlaybackStateChanged(int playbackState) {
+                Player.Listener.super.onPlaybackStateChanged(playbackState);
+                updatePlaybackState();
+            }
+
+            @Override
+            public void onPositionDiscontinuity(Player.PositionInfo oldPosition, Player.PositionInfo newPosition, int reason) {
+                Player.Listener.super.onPositionDiscontinuity(oldPosition, newPosition, reason);
+                updatePlaybackState();
             }
 
         });
@@ -61,21 +100,39 @@ public class ExoPlayerManager extends MyMediaSessionCallback {
 //        mediaPlayer.setOnCompletionListener(this::onCompletionListener);
     }
 
-    private void onPreparedListener(MediaPlayer player) {
-        onPlay();
-        if (isPreparedSeek) {
-            isPreparedSeek = false;
-            onSeekTo(preparedSeekPosition);
+    private void setPlayMode(int playMode) {
+        switch (playMode) {
+            case PlayMode.SINGLE_LOOP:
+                exoPlayer.setShuffleModeEnabled(false);
+                exoPlayer.setRepeatMode(Player.REPEAT_MODE_ONE);
+                break;
+            case PlayMode.ORDERLY:
+                exoPlayer.setShuffleModeEnabled(false);
+                exoPlayer.setRepeatMode(Player.REPEAT_MODE_ALL);
+                break;
+            case PlayMode.SHUFFLE:
+                exoPlayer.setShuffleModeEnabled(true);
+                exoPlayer.setRepeatMode(Player.REPEAT_MODE_ALL);
         }
+        Bundle bundle = new Bundle();
+        bundle.putInt(Key.playMode, playMode);
+        updatePlaybackState(bundle);
     }
 
-    private void onCompletionListener(MediaPlayer player) {
+    private void updatePlaybackState(Bundle... bundle) {
+        updatePlaybackState(exoPlayer.isPlaying() ? PlaybackStateCompat.STATE_PLAYING : PlaybackStateCompat.STATE_PAUSED, bundle);
+    }
+
+    private void updatePlaybackState(@PlaybackStateCompat.State int state, Bundle... bundle) {
+        // 更新视频的总进度, setMetadata 会更新MediaControlCompat的onMetadataChanged
         PlaybackStateCompat mPlaybackStateCompat = new PlaybackStateCompat.Builder()
-                .setState(PlaybackStateCompat.STATE_NONE, exoPlayer.getCurrentPosition(), 1.0f)
-                .setActions(getAvailableActions(PlaybackStateCompat.STATE_NONE))
+                .setState(state,
+                        exoPlayer.getCurrentPosition(),
+                        1.0f)
+                .setActions(getAvailableActions(state))
+                .setExtras(CollectionsKt.getOrNull(Arrays.asList(bundle), 0))
                 .build();
         mediaSession.setPlaybackState(mPlaybackStateCompat);
-//        mediaPlayer.reset();
     }
 
     public static long getAvailableActions(@PlaybackStateCompat.State int state) {
@@ -99,16 +156,8 @@ public class ExoPlayerManager extends MyMediaSessionCallback {
         if (getPlaybackState().getState() != PlaybackStateCompat.STATE_PLAYING
                 && myAudioManager.requestAudioFocus()
         ) {
-            exoPlayer.play();
             register();
-            // 更新视频的总进度, setMetadata 会更新MediaControlCompat的onMetadataChanged
-            PlaybackStateCompat mPlaybackStateCompat = new PlaybackStateCompat.Builder()
-                    .setState(PlaybackStateCompat.STATE_PLAYING,
-                            exoPlayer.getCurrentPosition(),
-                            1.0f)
-                    .setActions(getAvailableActions(PlaybackStateCompat.STATE_PLAYING))
-                    .build();
-            mediaSession.setPlaybackState(mPlaybackStateCompat);
+            exoPlayer.play();
         }
     }
 
@@ -117,10 +166,10 @@ public class ExoPlayerManager extends MyMediaSessionCallback {
         MediaMetadataCompat mediaMetadataCompat = null;
         if (mediaItem == null) {
             if (currentSong != null) {
-                mediaMetadataCompat = currentSong.mapToMediaMetadata(exoPlayer.getCurrentPosition());
+                mediaMetadataCompat = currentSong.mapToMediaMetadata(exoPlayer.getCurrentPosition(), exoPlayer.getDuration());
             }
         } else {
-            mediaMetadataCompat = MediaUtil.getMediaMetadataCompat(mediaItem, exoPlayer.getDuration());
+            mediaMetadataCompat = MediaUtil.getMediaMetadataCompat(mediaItem, exoPlayer.getContentDuration());
         }
         if (mediaMetadataCompat != null) {
             mediaSession.setMetadata(mediaMetadataCompat);
@@ -137,13 +186,7 @@ public class ExoPlayerManager extends MyMediaSessionCallback {
         LogUtil.d(TAG, "onPause");
         if (getPlaybackState().getState() == PlaybackStateCompat.STATE_PLAYING) {
             exoPlayer.pause();
-            PlaybackStateCompat playbackState = new PlaybackStateCompat.Builder()
-                    .setState(PlaybackStateCompat.STATE_PAUSED,
-                            exoPlayer.getCurrentPosition(),
-                            1.0f)
-                    .setActions(getAvailableActions(PlaybackStateCompat.STATE_PAUSED))
-                    .build();
-            mediaSession.setPlaybackState(playbackState);
+            updatePlaybackState(PlaybackStateCompat.STATE_PAUSED);
             myAudioManager.unregisterBecomingNoisyReceiver();
             myAudioManager.abandonAudioFocus();
         }
@@ -158,10 +201,6 @@ public class ExoPlayerManager extends MyMediaSessionCallback {
     @Override
     public void onPlayFromUri(Uri uri, Bundle extras) {
         super.onPlayFromUri(uri, extras);
-//            PlayQueue.getInstance().setCurrentIndexByUri(uri);
-//        List<Song> songs
-//               new  MediaItem.Builder()
-//                       .
         List<Song> songs = extras.getParcelableArrayList(Key.songList);
         if (songs != null) {
             int index = CollectionsKt.indexOfFirst(songs, song -> song.uri.equals(uri));
@@ -173,13 +212,7 @@ public class ExoPlayerManager extends MyMediaSessionCallback {
             exoPlayer.setMediaItem(MediaItem.fromUri(uri));
         }
 
-        PlaybackStateCompat mPlaybackStateCompat = new PlaybackStateCompat.Builder()
-                .setState(PlaybackStateCompat.STATE_CONNECTING,
-                        exoPlayer.getCurrentPosition(),
-                        1.0f)
-                .setActions(getAvailableActions(PlaybackStateCompat.STATE_CONNECTING))
-                .build();
-        mediaSession.setPlaybackState(mPlaybackStateCompat);
+        updatePlaybackState(PlaybackStateCompat.STATE_CONNECTING);
         exoPlayer.prepare();
         onPlay();
     }
@@ -202,30 +235,9 @@ public class ExoPlayerManager extends MyMediaSessionCallback {
     @Override
     public void onSeekTo(long pos) {
         super.onSeekTo(pos);
-//        public static final int SEEK_PREVIOUS_SYNC    = 0x00; //同步播放模式，会往前一点播放，默认模式
-//        public static final int SEEK_NEXT_SYNC        = 0x01; //同步播放模式，会后一点播放
-//        public static final int SEEK_CLOSEST_SYNC     = 0x02; //同步播放模式，精确播放
-//        public static final int SEEK_CLOSEST          = 0x03; //异步播放模式，精确播放
-
-//        if (getPlaybackState().getState() == PlaybackStateCompat.STATE_PLAYING) {
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//                mediaPlayer.seekTo(pos, MediaPlayer.SEEK_CLOSEST);
-//            } else {
-//                mediaPlayer.seekTo((int) pos);
-//            }
-
-//        } else {
-//            isPreparedSeek = true;
-//            preparedSeekPosition = pos;
-//        }
+        Log.d(TAG, "onSeekTo: " + pos);
         exoPlayer.seekTo(pos);
-        PlaybackStateCompat mPlaybackStateCompat = new PlaybackStateCompat.Builder()
-                .setState(PlaybackStateCompat.STATE_PLAYING,
-                        exoPlayer.getCurrentPosition(),
-                        1.0f)
-                .setActions(getAvailableActions(PlaybackStateCompat.STATE_PLAYING))
-                .build();
-        mediaSession.setPlaybackState(mPlaybackStateCompat);
+        updatePlaybackState(PlaybackStateCompat.STATE_PLAYING);
     }
 
     @Override
@@ -236,40 +248,16 @@ public class ExoPlayerManager extends MyMediaSessionCallback {
     @Override
     public void onSetRepeatMode(int repeatMode) {
         super.onSetRepeatMode(repeatMode);
-        int playModel = 0;
-        if (repeatMode == PlaybackStateCompat.REPEAT_MODE_ONE) {
-            playModel = PlayMode.SINGLE_LOOP;
-        } else {
-            playModel = PlayMode.ORDERLY;
-        }
-        Bundle bundle = new Bundle();
-        bundle.putInt(Key.playMode, playModel);
-        PlaybackStateCompat mPlaybackStateCompat = new PlaybackStateCompat.Builder()
-                .setState(PlaybackStateCompat.STATE_PLAYING,
-                        exoPlayer.getCurrentPosition(),
-                        1.0f)
-                .setActions(getAvailableActions(PlaybackStateCompat.STATE_PLAYING))
-                .setExtras(bundle)
-                .build();
-        mediaSession.setPlaybackState(mPlaybackStateCompat);
-        exoPlayer.setRepeatMode(repeatMode);
+        int playModel = repeatMode == PlaybackStateCompat.REPEAT_MODE_ONE ? PlayMode.SINGLE_LOOP : PlayMode.ORDERLY;
+        setPlayMode(playModel);
+        Pref.getInstance(service.getApplication()).setPlayMode(playModel);
     }
 
     @Override
     public void onSetShuffleMode(int shuffleMode) {
         super.onSetShuffleMode(shuffleMode);
-        Bundle bundle = new Bundle();
-        bundle.putInt(Key.playMode, PlayMode.SHUFFLE);
-        PlaybackStateCompat mPlaybackStateCompat = new PlaybackStateCompat.Builder()
-                .setState(PlaybackStateCompat.STATE_PLAYING,
-                        exoPlayer.getCurrentPosition(),
-                        1.0f)
-                .setActions(getAvailableActions(PlaybackStateCompat.STATE_PLAYING))
-                .setExtras(bundle)
-                .build();
-        mediaSession.setPlaybackState(mPlaybackStateCompat);
-        exoPlayer.setRepeatMode(Player.REPEAT_MODE_ALL);
-        exoPlayer.setShuffleOrder(new ShuffleOrder.DefaultShuffleOrder(exoPlayer.getMediaItemCount()));
+        setPlayMode(PlayMode.SHUFFLE);
+        Pref.getInstance(service.getApplication()).setPlayMode(PlayMode.SHUFFLE);
     }
 
     @Override

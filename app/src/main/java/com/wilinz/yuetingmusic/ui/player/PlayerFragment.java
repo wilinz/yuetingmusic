@@ -18,12 +18,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 
-import com.wilinz.yuetingmusic.Constant;
-import com.wilinz.yuetingmusic.Key;
 import com.wilinz.yuetingmusic.R;
 import com.wilinz.yuetingmusic.constant.PlayMode;
 import com.wilinz.yuetingmusic.databinding.FragmentPlayerBinding;
-import com.wilinz.yuetingmusic.ui.commen.MediaControllerViewModel;
 import com.wilinz.yuetingmusic.util.LogUtil;
 import com.wilinz.yuetingmusic.util.ScreenUtil;
 import com.wilinz.yuetingmusic.util.TimeUtil;
@@ -72,16 +69,7 @@ public class PlayerFragment extends Fragment {
             if (fromUser) viewModel.seekTo((long) value);
         });
         binding.switchPlayMode.setOnClickListener(v -> {
-            Integer playModeInteger = viewModel.getPlayModeLiveData().getValue();
-            int playMode = playModeInteger != null ? playModeInteger : PlayMode.ORDERLY;
-            if (playMode == PlayMode.ORDERLY) {
-                viewModel.getMediaController().getTransportControls().setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ONE);
-            } else if (playMode == PlayMode.SINGLE_LOOP) {
-                viewModel.getMediaController().getTransportControls().setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_ALL);
-            } else {
-                viewModel.getMediaController().getTransportControls().setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ALL);
-            }
-            viewModel.getMediaController().getTransportControls().setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_ALL);
+            viewModel.switchPlayMode();
         });
     }
 
@@ -117,11 +105,10 @@ public class PlayerFragment extends Fragment {
     }
 
     private void updatePosition(long position) {
-        if (position > binding.currentProgress.getValueTo()) {
-            binding.currentProgress.setValueTo(position);
+        if (position <= binding.currentProgress.getValueTo()) {
+            binding.currentProgress.setValue(position);
+            binding.currentProgressTime.setText(TimeUtil.format(position));
         }
-        binding.currentProgress.setValue(position);
-        binding.currentProgressTime.setText(TimeUtil.format(position));
     }
 
     private void updateMetadata(MediaMetadataCompat metadata) {
@@ -129,9 +116,11 @@ public class PlayerFragment extends Fragment {
         MediaDescriptionCompat description = metadata.getDescription();
         binding.songName.setText(description.getTitle().toString() + " - " + description.getSubtitle());
         long duration = metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
+        Log.d(TAG, "updateMetadata: " + duration + ", " + TimeUtil.format(duration));
         if (duration > 0) {
+            Log.d(TAG, "updateMetadata2: " + duration + ", " + TimeUtil.format(duration));
             binding.currentProgress.setValueTo(duration);
-            binding.currentProgressTime.setText(TimeUtil.format(duration));
+            binding.duration.setText(TimeUtil.format(duration));
         }
     }
 

@@ -2,6 +2,7 @@ package com.wilinz.yuetingmusic.ui.main;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
@@ -52,12 +53,12 @@ public class MainFragment extends Fragment {
         binding.songBar.setOnClickListener((v) -> {
             NavHostFragment.findNavController(this).navigate(R.id.action_MainFragment_to_PlayerFragment);
         });
-        binding.playPause.setOnClickListener(v->{
+        binding.playPause.setOnClickListener(v -> {
             if (viewModel.getPlaybackState().getState() == PlaybackStateCompat.STATE_PAUSED) {
                 viewModel.play();
-            } else if (viewModel.getPlaybackState().getState() == PlaybackStateCompat.STATE_PLAYING ){
+            } else if (viewModel.getPlaybackState().getState() == PlaybackStateCompat.STATE_PLAYING) {
                 viewModel.pause();
-            }else {
+            } else {
                 //todo
 //                playFromHistory
             }
@@ -120,7 +121,8 @@ public class MainFragment extends Fragment {
     private void updateMetadata(MediaMetadataCompat metadata) {
         Log.d(TAG, "updateMetadata: ");
         if (metadata == null) return;
-        binding.songName.setText(metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
+        MediaDescriptionCompat description = metadata.getDescription();
+        binding.songName.setText(description.getTitle().toString() + " - " + description.getSubtitle());
     }
 
     private void updatePlaybackState(PlaybackStateCompat state) {

@@ -149,6 +149,18 @@ public class MediaControllerViewModel extends AndroidViewModel {
         mediaController.getTransportControls().skipToNext();
     }
 
+    public void switchPlayMode(){
+        Integer playModeInteger = getPlayModeLiveData().getValue();
+        int playMode = playModeInteger != null ? playModeInteger : PlayMode.ORDERLY;
+        if (playMode == PlayMode.ORDERLY) {
+            mediaController.getTransportControls().setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ONE);
+        } else if (playMode == PlayMode.SINGLE_LOOP) {
+            mediaController.getTransportControls().setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_ALL);
+        } else {
+            mediaController.getTransportControls().setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ALL);
+        }
+    }
+
     private void updatePlaybackState(PlaybackStateCompat state) {
         playStateLiveData.setValue(state);
         Bundle bundle = state.getExtras();
