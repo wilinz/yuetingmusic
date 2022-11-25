@@ -29,11 +29,11 @@
                 app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
             <com.google.android.material.card.MaterialCardView
-                style="?attr/materialCardViewFilledStyle"
+                style="?attr/materialCardViewElevatedStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
-                android:layout_margin="16dp"
+                android:layout_margin="8dp"
                 android:clickable="true"
                 android:focusable="true"
                 app:cardElevation="8dp">
@@ -45,10 +45,12 @@
                     android:gravity="center"
                     android:padding="12dp">
 
-                    <ImageView
+                    <com.google.android.material.imageview.ShapeableImageView
                         android:id="@+id/song_avatar"
                         android:layout_width="48dp"
                         android:layout_height="48dp"
+                        android:scaleType="centerCrop"
+                        app:shapeAppearanceOverlay="@style/cornerStyle"
                         app:srcCompat="@drawable/avatar" />
 
                     <TextView
@@ -58,7 +60,7 @@
                         android:layout_marginStart="16dp"
                         android:layout_marginEnd="16dp"
                         android:layout_weight="1"
-                        android:text="起风了"
+                        android:text="暂无音乐播放"
                         android:textSize="16sp" />
 
                     <FrameLayout

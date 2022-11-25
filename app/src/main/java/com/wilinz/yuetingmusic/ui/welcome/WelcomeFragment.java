@@ -8,16 +8,17 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.wilinz.yuetingmusic.Key;
 import com.wilinz.yuetingmusic.R;
 import com.wilinz.yuetingmusic.databinding.FragmentWelcomeBinding;
 
-import java.util.Objects;
-
 public class WelcomeFragment extends Fragment {
     private FragmentWelcomeBinding binding;
+    private WelcomeViewModel viewModel;
 
     @Nullable
     @Override
@@ -29,13 +30,23 @@ public class WelcomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        binding.continue1.setOnClickListener(v -> {
+        viewModel = new ViewModelProvider(this).get(WelcomeViewModel.class);
+        viewModel.getUserLiveData().observe(getViewLifecycleOwner(), user -> {
             Bundle bundle = new Bundle();
-            bundle.putString(Key.email, Objects.requireNonNull(binding.email.getEditText()).getText().toString());
-            NavHostFragment.findNavController(this).navigate(R.id.action_FirstFragment_to_SecondFragment, bundle);
+            bundle.putParcelable(Key.user, user);
+            bundle.putString(Key.email, binding.email.getEditText().getText().toString());
+            NavHostFragment.findNavController(this).navigate(R.id.action_WelcomeFragment_to_LoginFragment, bundle);
+        });
+        binding.continue1.setOnClickListener(v -> {
+            viewModel.getUser(binding.email.getEditText().getText().toString());
         });
         binding.notLoggedIn.setOnClickListener(v -> {
-            NavHostFragment.findNavController(this).navigate(R.id.action_FirstFragment_to_MainFragment);
+            NavController navController = NavHostFragment.findNavController(this);
+            if (navController.getPreviousBackStackEntry() == null) {
+                navController.navigate(R.id.action_FirstFragment_to_MainFragment);
+            } else {
+                navController.popBackStack();
+            }
         });
     }
 

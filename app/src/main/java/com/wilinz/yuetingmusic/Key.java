@@ -2,6 +2,7 @@ package com.wilinz.yuetingmusic;
 
 public class Key {
     public static final String email = "email";
+    public static final String user = "user";
     public static final String music = "music";
     public static final String duration = "duration";
     public static final String songList = "songs";

@@ -7,27 +7,31 @@
     app:startDestination="@id/MainFragment">
 
     <fragment
-        android:id="@+id/FirstFragment"
+        android:id="@+id/WelcomeFragment"
         android:name="com.wilinz.yuetingmusic.ui.welcome.WelcomeFragment"
         android:label="@string/first_fragment_label"
         tools:layout="@layout/fragment_welcome">
 
         <action
-            android:id="@+id/action_FirstFragment_to_SecondFragment"
-            app:destination="@id/SecondFragment" />
+            android:id="@+id/action_WelcomeFragment_to_LoginFragment"
+            app:destination="@id/LoginFragment" />
         <action
             android:id="@+id/action_FirstFragment_to_MainFragment"
             app:destination="@id/MainFragment" />
     </fragment>
     <fragment
-        android:id="@+id/SecondFragment"
+        android:id="@+id/LoginFragment"
         android:name="com.wilinz.yuetingmusic.ui.login.LoginFragment"
         android:label="@string/second_fragment_label"
         tools:layout="@layout/fragment_login">
 
         <action
             android:id="@+id/action_SecondFragment_to_FirstFragment"
-            app:destination="@id/FirstFragment" />
+            app:destination="@id/WelcomeFragment" />
+        <action
+            android:id="@+id/action_LoginFragment_to_MainFragment"
+            app:destination="@id/MainFragment" />
+
     </fragment>
     <fragment
         android:id="@+id/MainFragment"
@@ -40,6 +44,10 @@
             app:enterAnim="@anim/up_enter"
             app:popExitAnim="@anim/up_exit"
             app:destination="@id/PlayerFragment" />
+
+        <action
+            android:id="@+id/action_MainFragment_to_WelcomeFragment"
+            app:destination="@id/WelcomeFragment" />
 
     </fragment>
     <fragment

@@ -45,8 +45,6 @@ public class MainFragment extends Fragment {
         viewModel.getPlaybackStateLiveData().observe(this.getViewLifecycleOwner(), this::updatePlaybackState);
         viewModel.getMediaMetadataLiveData().observe(this.getViewLifecycleOwner(), this::updateMetadata);
         viewModel.getPlayPositionLiveData().observe(this.getViewLifecycleOwner(), this::updatePosition);
-        RequestOptions options = new RequestOptions().transform(new RoundedCorners(ScreenUtil.dpToPx(requireContext(), 10)));
-        Glide.with(this).load(R.drawable.avatar).apply(options).into(binding.songAvatar);
 
         setViewPage2();
         setBottomNavigation();

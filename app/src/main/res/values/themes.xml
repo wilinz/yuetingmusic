@@ -29,4 +29,10 @@
         <item name="colorSurface">@color/shrine_pink_100</item>
         <item name="colorOnSurface">@color/shrine_pink_900</item>
     </style>
+
+    <style name="cornerStyle">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
+    </style>
+
 </resources>
