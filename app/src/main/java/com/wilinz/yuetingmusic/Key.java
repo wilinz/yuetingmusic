@@ -7,4 +7,5 @@ public class Key {
     public static final String duration = "duration";
     public static final String songList = "songs";
     public static final String playMode = "play_mode";
+    public static final String currentLoginEmail = "current_login_email";
 }

@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
+import com.wilinz.yuetingmusic.Pref;
 import com.wilinz.yuetingmusic.data.model.User;
 import com.wilinz.yuetingmusic.util.MessageDigestUtil;
 
@@ -20,7 +21,7 @@ public class LoginOrSignupViewModel extends AndroidViewModel {
         return signupResult;
     }
 
-    private MutableLiveData<Boolean> signupResult=new MutableLiveData<>();
+    private MutableLiveData<Boolean> signupResult = new MutableLiveData<>();
 
 
     public LoginOrSignupViewModel(@NonNull Application application) {
@@ -28,7 +29,9 @@ public class LoginOrSignupViewModel extends AndroidViewModel {
     }
 
     public boolean login(User user, String password) {
-        return user.password.equals(MessageDigestUtil.sumSha256(password));
+        boolean isPasswordValid = user.password.equals(MessageDigestUtil.sumSha256(password));
+        if (isPasswordValid) Pref.getInstance(getApplication()).setCurrentLoginEmail(user.email);
+        return isPasswordValid;
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -45,9 +48,10 @@ public class LoginOrSignupViewModel extends AndroidViewModel {
                 }, e -> {
                     signupResult.setValue(false);
                     Toast.makeText(getApplication(), "注册失败：" + e.toString(), Toast.LENGTH_SHORT).show();
-                },()->{
+                }, () -> {
                     signupResult.setValue(true);
                     Toast.makeText(getApplication(), "注册成功", Toast.LENGTH_SHORT).show();
+                    Pref.getInstance(getApplication()).setCurrentLoginEmail(email);
                 });
     }
 

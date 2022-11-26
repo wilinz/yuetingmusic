@@ -24,6 +24,14 @@ public class Pref {
         return preferences.getInt(Key.playMode, PlayMode.ORDERLY);
     }
 
+    public void setCurrentLoginEmail(String email){
+        preferences.edit().putString(Key.currentLoginEmail,email).apply();
+    }
+
+    public String getCurrentLoginEmail(){
+        return preferences.getString(Key.currentLoginEmail,"");
+    }
+
     public static Pref getInstance(Application context) {
         if (instance == null) {
             synchronized (Pref.class) {

@@ -1,16 +1,16 @@
 package com.wilinz.yuetingmusic.ui.welcome;
 
 import android.app.Application;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
-import androidx.lifecycle.MutableLiveData;
 
 import com.wilinz.yuetingmusic.data.model.User;
 import com.wilinz.yuetingmusic.data.repository.UserRepository;
 
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import java.util.Optional;
+
+import io.reactivex.rxjava3.core.Observable;
 
 
 public class WelcomeViewModel extends AndroidViewModel {
@@ -19,24 +19,8 @@ public class WelcomeViewModel extends AndroidViewModel {
         super(application);
     }
 
-    public MutableLiveData<User> getUserLiveData() {
-        return userLiveData;
-    }
-
-    private MutableLiveData<User> userLiveData = new MutableLiveData<>();
-
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    public void getUser(String email) {
-        UserRepository.getInstance().getUser(email)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        (user -> {
-                            userLiveData.setValue(user.orElse(null));
-                        }),
-                        err -> {
-                            err.printStackTrace();
-                            Toast.makeText(getApplication(), "登录或注册失败：" + err.toString(), Toast.LENGTH_LONG).show();
-                        });
+    public Observable<Optional<User>> getUser(String email) {
+        return UserRepository.getInstance().getUser(email);
     }
 
 }

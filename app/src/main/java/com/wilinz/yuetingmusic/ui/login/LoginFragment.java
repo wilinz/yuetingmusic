@@ -33,12 +33,13 @@ public class LoginFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(this).get(LoginOrSignupViewModel.class);
-        viewModel.getSignupResult().observe(getViewLifecycleOwner(),success->{
-            if (success){
+        viewModel.getSignupResult().observe(getViewLifecycleOwner(), success -> {
+            if (success) {
                 NavHostFragment.findNavController(this).navigate(R.id.action_LoginFragment_to_MainFragment);
             }
         });
         Bundle bundle = NavHostFragment.findNavController(this).getCurrentBackStackEntry().getArguments();
+        if (bundle == null) return;
         User user = bundle.getParcelable(Key.user);
         String email = bundle.getString(Key.email);
         isLoginMode = user != null;
