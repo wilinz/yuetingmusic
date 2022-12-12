@@ -98,6 +98,7 @@ public class MediaUtil {
                 .putString(MediaMetadataCompat.METADATA_KEY_TITLE, mediaItem.mediaMetadata.title+"")
                 .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, mediaItem.mediaMetadata.artist+"")
                 .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, duration)
+                .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON_URI,mediaItem.mediaMetadata.artworkUri.toString())
                 .build();
     }
 }

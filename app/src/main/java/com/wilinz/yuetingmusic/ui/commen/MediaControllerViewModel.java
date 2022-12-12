@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.ComponentName;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
@@ -18,8 +19,12 @@ import androidx.lifecycle.MutableLiveData;
 import com.wilinz.yuetingmusic.Key;
 import com.wilinz.yuetingmusic.Pref;
 import com.wilinz.yuetingmusic.constant.PlayMode;
+import com.wilinz.yuetingmusic.data.model.Song;
 import com.wilinz.yuetingmusic.player.MusicService;
 import com.wilinz.yuetingmusic.util.RxTimer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @SuppressLint("LongLogTag")
 public class MediaControllerViewModel extends AndroidViewModel {
@@ -91,6 +96,12 @@ public class MediaControllerViewModel extends AndroidViewModel {
                     // 该服务已拒绝我们的连接
                 }
             };
+
+    public void playFromUri(List<Song> songs,Song song) {
+            Bundle bundle = new Bundle();
+            bundle.putParcelableArrayList(Key.songList, (ArrayList<? extends Parcelable>) songs);
+            mediaController.getTransportControls().playFromUri(song.uri,bundle);
+    }
 
     private void buildTransportControls() {
         mediaMetadataLiveData.setValue(mediaController.getMetadata());

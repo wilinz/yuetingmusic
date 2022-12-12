@@ -22,9 +22,9 @@ public class ViewPage2Adapter extends FragmentStateAdapter {
             case 0:
                 fragment = new HomeFragment();
                 break;
-            case 1:
-                fragment = new FavoriteFragment();
-                break;
+//            case 1:
+//                fragment = new FavoriteFragment();
+//                break;
             default:
                 fragment = new ProfileFragment();
 
@@ -34,6 +34,6 @@ public class ViewPage2Adapter extends FragmentStateAdapter {
 
     @Override
     public int getItemCount() {
-        return 3;
+        return 2;
     }
 }

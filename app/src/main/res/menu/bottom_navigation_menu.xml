@@ -5,11 +5,11 @@
         android:enabled="true"
         android:icon="@drawable/outline_home_24"
         android:title="@string/home"/>
-    <item
-        android:id="@+id/page_2"
-        android:enabled="true"
-        android:icon="@drawable/outline_favorite_border_24"
-        android:title="@string/favorite"/>
+<!--    <item-->
+<!--        android:id="@+id/page_2"-->
+<!--        android:enabled="true"-->
+<!--        android:icon="@drawable/outline_favorite_border_24"-->
+<!--        android:title="@string/favorite"/>-->
     <item
         android:id="@+id/page_3"
         android:enabled="true"

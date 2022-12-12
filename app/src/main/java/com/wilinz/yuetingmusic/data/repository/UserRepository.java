@@ -3,6 +3,8 @@ package com.wilinz.yuetingmusic.data.repository;
 import android.content.Context;
 import android.net.Uri;
 
+import androidx.core.net.UriKt;
+
 import com.wilinz.yuetingmusic.data.model.User;
 import com.wilinz.yuetingmusic.util.UriUtil;
 
@@ -36,7 +38,10 @@ public class UserRepository {
             String rawFilename = UriUtil.getFileName(context, avatar);
             String ext = FilenameUtils.getExtension(rawFilename);
             Uri newUri = Uri.fromFile(UriUtil.copyToDir(context, dir, avatar, System.currentTimeMillis() + "." + ext));
-//            if (user.avatar!=null)context.getContentResolver().delete(Uri.parse(user.avatar));
+            if (user.avatar != null) {
+                File oldFile = UriKt.toFile(Uri.parse(user.avatar));
+                oldFile.delete();
+            }
             user.avatar = newUri.toString();
             user.save();
             return user;

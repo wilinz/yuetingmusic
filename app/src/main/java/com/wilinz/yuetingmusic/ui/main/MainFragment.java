@@ -70,17 +70,7 @@ public class MainFragment extends Fragment {
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
-                int id;
-                switch (position) {
-                    case 0:
-                        id = R.id.page_1;
-                        break;
-                    case 1:
-                        id = R.id.page_2;
-                        break;
-                    default:
-                        id = R.id.page_3;
-                }
+                int id = binding.bottomNavigation.getMenu().getItem(position).getItemId();
                 if (binding.bottomNavigation.getSelectedItemId() != id) {
                     binding.bottomNavigation.setSelectedItemId(id);
                 }
@@ -97,9 +87,9 @@ public class MainFragment extends Fragment {
                 case R.id.page_1:
                     index = 0;
                     break;
-                case R.id.page_2:
-                    index = 1;
-                    break;
+//                case R.id.page_2:
+//                    index = 1;
+//                    break;
                 default:
                     index = 2;
             }
@@ -120,6 +110,9 @@ public class MainFragment extends Fragment {
         Log.d(TAG, "updateMetadata: ");
         if (metadata == null) return;
         MediaDescriptionCompat description = metadata.getDescription();
+        Glide.with(requireContext())
+                .load(description.getIconUri())
+                .into(binding.songAvatar);
         binding.songName.setText(description.getTitle().toString() + " - " + description.getSubtitle());
     }
 

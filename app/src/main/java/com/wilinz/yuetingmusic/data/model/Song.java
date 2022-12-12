@@ -7,12 +7,8 @@ import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
 
-import androidx.annotation.NonNull;
-
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.MediaMetadata;
-
-import java.util.Objects;
 
 public class Song implements Parcelable {
 
@@ -21,6 +17,7 @@ public class Song implements Parcelable {
                 .setTitle(title)
                 .setAlbumTitle(album)
                 .setArtist(artist)
+                .setArtworkUri(Uri.parse(coverImgUrl))
                 .build();
         return new MediaItem.Builder()
                 .setMediaId(uri.toString())
@@ -32,6 +29,7 @@ public class Song implements Parcelable {
     public MediaBrowserCompat.MediaItem mapToMediaItem() {
         MediaDescriptionCompat desc =
                 new MediaDescriptionCompat.Builder()
+                        .setIconUri(Uri.parse(this.coverImgUrl))
                         .setMediaId(this.uri.toString())
                         .setTitle(this.title)
                         .setSubtitle(this.artist)
@@ -48,9 +46,9 @@ public class Song implements Parcelable {
                 .putString(MediaMetadataCompat.METADATA_KEY_TITLE, this.title)
                 .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, this.artist)
                 .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, duration)
+                .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON_URI, this.coverImgUrl)
                 .build();
     }
-
 
 
     @Override
@@ -58,14 +56,16 @@ public class Song implements Parcelable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Song song1 = (Song) o;
+        Song song = (Song) o;
 
-        if (duration != song1.duration) return false;
-        if (size != song1.size) return false;
-        if (!Objects.equals(title, song1.title)) return false;
-        if (!Objects.equals(artist, song1.artist)) return false;
-        if (!Objects.equals(album, song1.album)) return false;
-        return Objects.equals(uri, song1.uri);
+        if (duration != song.duration) return false;
+        if (size != song.size) return false;
+        if (title != null ? !title.equals(song.title) : song.title != null) return false;
+        if (artist != null ? !artist.equals(song.artist) : song.artist != null) return false;
+        if (album != null ? !album.equals(song.album) : song.album != null) return false;
+        if (coverImgUrl != null ? !coverImgUrl.equals(song.coverImgUrl) : song.coverImgUrl != null)
+            return false;
+        return uri != null ? uri.equals(song.uri) : song.uri == null;
     }
 
     @Override
@@ -73,34 +73,38 @@ public class Song implements Parcelable {
         int result = title != null ? title.hashCode() : 0;
         result = 31 * result + (artist != null ? artist.hashCode() : 0);
         result = 31 * result + (album != null ? album.hashCode() : 0);
+        result = 31 * result + (coverImgUrl != null ? coverImgUrl.hashCode() : 0);
         result = 31 * result + (uri != null ? uri.hashCode() : 0);
-        result = 31 * result + duration;
+        result = 31 * result + (int) (duration ^ (duration >>> 32));
         result = 31 * result + (int) (size ^ (size >>> 32));
         return result;
     }
 
-    public Song() {
-    }
-
-    @NonNull
     @Override
     public String toString() {
         return "Song{" +
-                "song='" + title + '\'' +
-                ", singer='" + artist + '\'' +
+                "title='" + title + '\'' +
+                ", artist='" + artist + '\'' +
                 ", album='" + album + '\'' +
-                ", path='" + uri + '\'' +
+                ", cover='" + coverImgUrl + '\'' +
+                ", uri=" + uri +
                 ", duration=" + duration +
                 ", size=" + size +
                 '}';
     }
 
+    public Song() {
+    }
+
+
     public String title;
     public String artist;
     public String album;
+    public String coverImgUrl;
     public Uri uri;
-    public int duration;
+    public long duration;
     public long size;
+
 
     @Override
     public int describeContents() {
@@ -112,8 +116,9 @@ public class Song implements Parcelable {
         dest.writeString(this.title);
         dest.writeString(this.artist);
         dest.writeString(this.album);
+        dest.writeString(this.coverImgUrl);
         dest.writeParcelable(this.uri, flags);
-        dest.writeInt(this.duration);
+        dest.writeLong(this.duration);
         dest.writeLong(this.size);
     }
 
@@ -121,8 +126,9 @@ public class Song implements Parcelable {
         this.title = source.readString();
         this.artist = source.readString();
         this.album = source.readString();
+        this.coverImgUrl = source.readString();
         this.uri = source.readParcelable(Uri.class.getClassLoader());
-        this.duration = source.readInt();
+        this.duration = source.readLong();
         this.size = source.readLong();
     }
 
@@ -130,8 +136,9 @@ public class Song implements Parcelable {
         this.title = in.readString();
         this.artist = in.readString();
         this.album = in.readString();
+        this.coverImgUrl = in.readString();
         this.uri = in.readParcelable(Uri.class.getClassLoader());
-        this.duration = in.readInt();
+        this.duration = in.readLong();
         this.size = in.readLong();
     }
 
