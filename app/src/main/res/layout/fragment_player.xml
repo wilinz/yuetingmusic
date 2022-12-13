@@ -1,155 +1,171 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.player.PlayerFragment">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/background_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop" />
+
+    <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
     android:orientation="vertical"
     tools:context=".ui.player.PlayerFragment">
+<!--        <com.google.android.material.appbar.AppBarLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:fitsSystemWindows="true">-->
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fitsSystemWindows="true">
+<!--            <com.google.android.material.appbar.MaterialToolbar-->
+<!--                android:id="@+id/topAppBar"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="?attr/actionBarSize"-->
+<!--                app:title="悦听" />-->
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/topAppBar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:title="悦听" />
+<!--        </com.google.android.material.appbar.AppBarLayout>-->
 
-    </com.google.android.material.appbar.AppBarLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:padding="16dp">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:gravity="center">
+            android:orientation="vertical"
+            android:padding="16dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center">
 
-            <ImageView
-                android:layout_width="300dp"
-                android:layout_height="300dp"
-                app:srcCompat="@drawable/logo" />
-        </LinearLayout>
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/avatar"
+                    android:layout_width="300dp"
+                    android:layout_height="300dp"
+                    android:scaleType="centerCrop"
+                    app:shapeAppearanceOverlay="@style/roundStyle"
+                    app:srcCompat="@drawable/logo" />
 
-        <TextView
-            android:id="@+id/song_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:layout_marginStart="8dp"
-            android:text="起风了"/>
+            </LinearLayout>
 
-        <com.google.android.material.slider.Slider
-            android:id="@+id/current_progress"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:valueFrom="0.0"
-            android:valueTo="100.0" />
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp">
             <TextView
-                android:id="@+id/current_progress_time"
+                android:id="@+id/song_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="00:13"
-                android:layout_alignParentStart="true"/>
-            <TextView
-                android:id="@+id/duration"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="03:57"
-                android:layout_alignParentEnd="true"/>
-        </RelativeLayout>
+                android:textSize="18sp"
+                android:layout_marginStart="8dp"
+                android:text="起风了"/>
 
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="0dp">
-            <FrameLayout
-                android:layout_width="0dp"
+            <com.google.android.material.slider.Slider
+                android:id="@+id/current_progress"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="@integer/material_motion_duration_long_1">
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/switch_play_mode"
-                    android:layout_gravity="center"
+                android:valueFrom="0.0"
+                android:valueTo="100.0" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp">
+                <TextView
+                    android:id="@+id/current_progress_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    style="@style/Widget.Material3.Button.IconButtonFixed"
-                    app:icon="@drawable/round_repeat_24"/>
-
-            </FrameLayout>
-
-            <FrameLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="@integer/material_motion_duration_long_1">
-                <Button
-                    android:id="@+id/skip_to_previous"
-                    android:layout_gravity="center"
+                    android:text="00:13"
+                    android:layout_alignParentStart="true"/>
+                <TextView
+                    android:id="@+id/duration"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    style="@style/Widget.Material3.Button.IconButtonFixed"
-                    app:icon="@drawable/skip_previous"/>
+                    android:text="03:57"
+                    android:layout_alignParentEnd="true"/>
+            </RelativeLayout>
 
-            </FrameLayout>
-            <FrameLayout
-                android:layout_width="0dp"
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="@integer/material_motion_duration_long_1">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/play_pause"
-                    style="@style/Widget.Material3.Button.IconButtonFixed"
-                    android:layout_width="wrap_content"
+                android:layout_marginBottom="0dp">
+                <FrameLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    app:icon="@drawable/play_arrow_24px" />
+                    android:layout_weight="@integer/material_motion_duration_long_1">
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/switch_play_mode"
+                        android:layout_gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/Widget.Material3.Button.IconButtonFixed"
+                        app:icon="@drawable/round_repeat_24"/>
 
-            </FrameLayout>
-            <FrameLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="@integer/material_motion_duration_long_1">
-                <Button
-                    android:id="@+id/skip_to_next"
-                    android:layout_gravity="center"
-                    android:layout_width="wrap_content"
+                </FrameLayout>
+
+                <FrameLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    style="@style/Widget.Material3.Button.IconButtonFixed"
-                    app:icon="@drawable/skip_next"/>
+                    android:layout_weight="@integer/material_motion_duration_long_1">
+                    <Button
+                        android:id="@+id/skip_to_previous"
+                        android:layout_gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/Widget.Material3.Button.IconButtonFixed"
+                        app:icon="@drawable/skip_previous"/>
 
-            </FrameLayout>
-            <FrameLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="@integer/material_motion_duration_long_1">
-                <Button
-                    android:layout_gravity="center"
-                    android:layout_width="wrap_content"
+                </FrameLayout>
+                <FrameLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    style="@style/Widget.Material3.Button.IconButtonFixed"
-                    app:icon="@drawable/round_queue_music_24"/>
+                    android:layout_weight="@integer/material_motion_duration_long_1">
 
-            </FrameLayout>
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/play_pause"
+                        style="@style/Widget.Material3.Button.IconButtonFixed"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        app:icon="@drawable/play_arrow_24px" />
+
+                </FrameLayout>
+                <FrameLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="@integer/material_motion_duration_long_1">
+                    <Button
+                        android:id="@+id/skip_to_next"
+                        android:layout_gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/Widget.Material3.Button.IconButtonFixed"
+                        app:icon="@drawable/skip_next"/>
+
+                </FrameLayout>
+                <FrameLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="@integer/material_motion_duration_long_1">
+                    <Button
+                        android:layout_gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/Widget.Material3.Button.IconButtonFixed"
+                        app:icon="@drawable/round_queue_music_24"/>
+
+                </FrameLayout>
+            </LinearLayout>
+            <Space
+                android:id="@+id/bottom_padding"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"/>
         </LinearLayout>
-        <Space
-            android:id="@+id/bottom_padding"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"/>
+
     </LinearLayout>
 
 
-</LinearLayout>
+</FrameLayout>

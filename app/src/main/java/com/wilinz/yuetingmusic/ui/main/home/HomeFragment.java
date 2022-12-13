@@ -21,6 +21,7 @@ import com.wilinz.yuetingmusic.data.model.MusicUrl;
 import com.wilinz.yuetingmusic.data.model.Song;
 import com.wilinz.yuetingmusic.data.model.TopListSong;
 import com.wilinz.yuetingmusic.databinding.FragmentHomeBinding;
+import com.wilinz.yuetingmusic.util.MediaUtil;
 import com.wilinz.yuetingmusic.util.ToastUtilKt;
 
 import java.util.ArrayList;
@@ -57,6 +58,9 @@ public class HomeFragment extends Fragment {
                     .compose(AndroidLifecycle.createLifecycleProvider(getViewLifecycleOwner()).bindToLifecycle())
                     .subscribe((data) -> {
                         adapter0.notifyItemChanged(index);
+                    }, e -> {
+                        e.printStackTrace();
+                        ToastUtilKt.toast(requireContext(), "获取数据失败：" + e.getMessage());
                     });
         });
         adapter0.setOnSongClickListener(((index0, index1, songs, song) -> {
@@ -66,28 +70,15 @@ public class HomeFragment extends Fragment {
                     .compose(AndroidLifecycle.createLifecycleProvider(getViewLifecycleOwner()).bindToLifecycle())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(data -> {
-
-                        ArrayList<Song> songArrayList = new ArrayList<>(data.data.size());
-                        for (int i = 0; i < data.data.size(); i++) {
-                            MusicUrl.MusicInfo musicInfo = data.data.get(i);
-                            TopListSong.PlaylistBean.TracksBean tracks = songs.get(i);
-
-                            Song song3 = new Song();
-                            if (musicInfo.url == null) {
-                                ToastUtilKt.toast(requireContext(), "此歌曲不可播放");
-                                return;
-                            }
-                            song3.uri = Uri.parse(musicInfo.url);
-                            song3.album = tracks.al.name;
-                            song3.size = musicInfo.size;
-                            song3.artist = tracks.ar.get(0).name;
-                            song3.duration = musicInfo.time;
-                            song3.title = tracks.name;
-                            song3.coverImgUrl = tracks.al.picUrl;
-                            songArrayList.add(song3);
+                        List<Song> songArrayList = MediaUtil.getSongs(songs, data.data, true);
+                        if (songArrayList == null) {
+                            ToastUtilKt.toast(requireContext(), "此歌曲未登录无法播放");
+                            return;
                         }
-
                         viewModel.playFromUri(songArrayList, songArrayList.get(index1));
+                    }, e -> {
+                        e.printStackTrace();
+                        ToastUtilKt.toast(requireContext(), "获取数据失败：" + e.getMessage());
                     });
 
         }));

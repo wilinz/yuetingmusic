@@ -18,12 +18,16 @@ import android.view.View;
 import android.view.ViewGroup;
 
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.wilinz.yuetingmusic.R;
 import com.wilinz.yuetingmusic.constant.PlayMode;
 import com.wilinz.yuetingmusic.databinding.FragmentPlayerBinding;
 import com.wilinz.yuetingmusic.util.LogUtil;
 import com.wilinz.yuetingmusic.util.ScreenUtil;
 import com.wilinz.yuetingmusic.util.TimeUtil;
+
+import jp.wasabeef.glide.transformations.BlurTransformation;
 
 public class PlayerFragment extends Fragment {
 
@@ -49,6 +53,7 @@ public class PlayerFragment extends Fragment {
         viewModel.getPlaybackStateLiveData().observe(this.getViewLifecycleOwner(), this::updatePlaybackState);
         viewModel.getMediaMetadataLiveData().observe(this.getViewLifecycleOwner(), this::updateMetadata);
         viewModel.getPlayModeLiveData().observe(this.getViewLifecycleOwner(), this::updatePlayMode);
+        viewModel.getUpdatePictureRotationLiveData().observe(this.getViewLifecycleOwner(), value -> binding.avatar.setRotation(value));
         binding.playPause.setOnClickListener(v -> {
             int pbState = viewModel.getPlaybackState().getState();
             LogUtil.d(TAG, Integer.valueOf(pbState).toString());
@@ -99,7 +104,9 @@ public class PlayerFragment extends Fragment {
     private void updatePlaybackState(PlaybackStateCompat state) {
         if (state.getState() == PlaybackStateCompat.STATE_NONE || state.getState() == PlaybackStateCompat.STATE_PAUSED) {
             binding.playPause.setIcon(ContextCompat.getDrawable(requireContext(), R.drawable.play_arrow_24px));
+            viewModel.stopPictureRotationTimer();
         } else {
+            viewModel.startPictureRotationTimer(0.25f);
             binding.playPause.setIcon(ContextCompat.getDrawable(requireContext(), R.drawable.round_pause_24));
         }
     }
@@ -115,6 +122,14 @@ public class PlayerFragment extends Fragment {
         if (metadata == null) return;
         MediaDescriptionCompat description = metadata.getDescription();
         binding.songName.setText(description.getTitle().toString() + " - " + description.getSubtitle());
+        Glide.with(requireContext())
+                .load(description.getIconUri())
+                .apply(RequestOptions.bitmapTransform(new BlurTransformation(50, 3)))
+                .into(binding.backgroundImage);
+        Glide.with(requireContext())
+                .load(description.getIconUri())
+                .error(R.drawable.logo)
+                .into(binding.avatar);
         long duration = metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
         Log.d(TAG, "updateMetadata: " + duration + ", " + TimeUtil.format(duration));
         if (duration > 0) {

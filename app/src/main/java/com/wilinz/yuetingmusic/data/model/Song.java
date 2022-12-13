@@ -10,7 +10,9 @@ import android.support.v4.media.MediaMetadataCompat;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.MediaMetadata;
 
-public class Song implements Parcelable {
+import org.litepal.crud.LitePalSupport;
+
+public class Song extends LitePalSupport implements Parcelable {
 
     public MediaItem mapToExoPlayerMediaItem() {
         MediaMetadata mediaMetadata = new MediaMetadata.Builder()
@@ -50,6 +52,33 @@ public class Song implements Parcelable {
                 .build();
     }
 
+    public Song() {
+    }
+
+
+    public long neteaseCloudId;
+    public String title;
+    public String artist;
+    public String album;
+    public String coverImgUrl;
+    public Uri uri;
+    public long duration;
+    public long size;
+
+
+    @Override
+    public String toString() {
+        return "Song{" +
+                "neteaseCloudId=" + neteaseCloudId +
+                ", title='" + title + '\'' +
+                ", artist='" + artist + '\'' +
+                ", album='" + album + '\'' +
+                ", coverImgUrl='" + coverImgUrl + '\'' +
+                ", uri=" + uri +
+                ", duration=" + duration +
+                ", size=" + size +
+                '}';
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -58,6 +87,7 @@ public class Song implements Parcelable {
 
         Song song = (Song) o;
 
+        if (neteaseCloudId != song.neteaseCloudId) return false;
         if (duration != song.duration) return false;
         if (size != song.size) return false;
         if (title != null ? !title.equals(song.title) : song.title != null) return false;
@@ -70,7 +100,8 @@ public class Song implements Parcelable {
 
     @Override
     public int hashCode() {
-        int result = title != null ? title.hashCode() : 0;
+        int result = (int) (neteaseCloudId ^ (neteaseCloudId >>> 32));
+        result = 31 * result + (title != null ? title.hashCode() : 0);
         result = 31 * result + (artist != null ? artist.hashCode() : 0);
         result = 31 * result + (album != null ? album.hashCode() : 0);
         result = 31 * result + (coverImgUrl != null ? coverImgUrl.hashCode() : 0);
@@ -80,31 +111,6 @@ public class Song implements Parcelable {
         return result;
     }
 
-    @Override
-    public String toString() {
-        return "Song{" +
-                "title='" + title + '\'' +
-                ", artist='" + artist + '\'' +
-                ", album='" + album + '\'' +
-                ", cover='" + coverImgUrl + '\'' +
-                ", uri=" + uri +
-                ", duration=" + duration +
-                ", size=" + size +
-                '}';
-    }
-
-    public Song() {
-    }
-
-
-    public String title;
-    public String artist;
-    public String album;
-    public String coverImgUrl;
-    public Uri uri;
-    public long duration;
-    public long size;
-
 
     @Override
     public int describeContents() {
@@ -113,6 +119,7 @@ public class Song implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(this.neteaseCloudId);
         dest.writeString(this.title);
         dest.writeString(this.artist);
         dest.writeString(this.album);
@@ -123,6 +130,7 @@ public class Song implements Parcelable {
     }
 
     public void readFromParcel(Parcel source) {
+        this.neteaseCloudId = source.readLong();
         this.title = source.readString();
         this.artist = source.readString();
         this.album = source.readString();
@@ -133,6 +141,7 @@ public class Song implements Parcelable {
     }
 
     protected Song(Parcel in) {
+        this.neteaseCloudId = in.readLong();
         this.title = in.readString();
         this.artist = in.readString();
         this.album = in.readString();

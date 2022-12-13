@@ -20,8 +20,12 @@ import com.wilinz.yuetingmusic.Key;
 import com.wilinz.yuetingmusic.Pref;
 import com.wilinz.yuetingmusic.constant.PlayMode;
 import com.wilinz.yuetingmusic.data.model.Song;
+import com.wilinz.yuetingmusic.data.model.User;
 import com.wilinz.yuetingmusic.util.LogUtil;
 import com.wilinz.yuetingmusic.util.MediaUtil;
+
+import org.litepal.LitePal;
+import org.litepal.crud.LitePalSupport;
 
 import java.util.Arrays;
 import java.util.List;

@@ -19,11 +19,8 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
-import com.bumptech.glide.request.RequestOptions;
 import com.wilinz.yuetingmusic.R;
 import com.wilinz.yuetingmusic.databinding.FragmentMainBinding;
-import com.wilinz.yuetingmusic.util.ScreenUtil;
 
 public class MainFragment extends Fragment {
     private static final String TAG = "MainFragment";
@@ -45,7 +42,7 @@ public class MainFragment extends Fragment {
         viewModel.getPlaybackStateLiveData().observe(this.getViewLifecycleOwner(), this::updatePlaybackState);
         viewModel.getMediaMetadataLiveData().observe(this.getViewLifecycleOwner(), this::updateMetadata);
         viewModel.getPlayPositionLiveData().observe(this.getViewLifecycleOwner(), this::updatePosition);
-
+        viewModel.getUpdatePictureRotationLiveData().observe(this.getViewLifecycleOwner(), value -> binding.songAvatar.setRotation(value));
         setViewPage2();
         setBottomNavigation();
         binding.songBar.setOnClickListener((v) -> {
@@ -119,7 +116,9 @@ public class MainFragment extends Fragment {
     private void updatePlaybackState(PlaybackStateCompat state) {
         if (state.getState() == PlaybackStateCompat.STATE_NONE || state.getState() == PlaybackStateCompat.STATE_PAUSED) {
             binding.playPause.setIcon(ContextCompat.getDrawable(requireContext(), R.drawable.play_arrow_24px));
+            viewModel.stopPictureRotationTimer();
         } else {
+            viewModel.startPictureRotationTimer(0.5f);
             binding.playPause.setIcon(ContextCompat.getDrawable(requireContext(), R.drawable.round_pause_24));
         }
     }

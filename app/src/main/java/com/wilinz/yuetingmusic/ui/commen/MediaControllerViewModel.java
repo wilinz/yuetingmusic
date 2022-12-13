@@ -25,6 +25,7 @@ import com.wilinz.yuetingmusic.util.RxTimer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @SuppressLint("LongLogTag")
 public class MediaControllerViewModel extends AndroidViewModel {
@@ -97,10 +98,10 @@ public class MediaControllerViewModel extends AndroidViewModel {
                 }
             };
 
-    public void playFromUri(List<Song> songs,Song song) {
-            Bundle bundle = new Bundle();
-            bundle.putParcelableArrayList(Key.songList, (ArrayList<? extends Parcelable>) songs);
-            mediaController.getTransportControls().playFromUri(song.uri,bundle);
+    public void playFromUri(List<Song> songs, Song song) {
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList(Key.songList, (ArrayList<? extends Parcelable>) songs);
+        mediaController.getTransportControls().playFromUri(song.uri, bundle);
     }
 
     private void buildTransportControls() {
@@ -160,7 +161,7 @@ public class MediaControllerViewModel extends AndroidViewModel {
         mediaController.getTransportControls().skipToNext();
     }
 
-    public void switchPlayMode(){
+    public void switchPlayMode() {
         Integer playModeInteger = getPlayModeLiveData().getValue();
         int playMode = playModeInteger != null ? playModeInteger : PlayMode.ORDERLY;
         if (playMode == PlayMode.ORDERLY) {
@@ -190,6 +191,29 @@ public class MediaControllerViewModel extends AndroidViewModel {
                 playPositionLiveData.setValue(position);
             });
         }
+    }
+
+    private final MutableLiveData<Float> updatePictureRotationLiveData = new MutableLiveData<>();
+
+    public RxTimer pictureRotationTimer;
+
+    public LiveData<Float> getUpdatePictureRotationLiveData() {
+        return updatePictureRotationLiveData;
+    }
+
+    public void startPictureRotationTimer(float growth) {
+        if (pictureRotationTimer == null || pictureRotationTimer.isCanceled()) {
+//            stopPictureRotationTimer();
+            pictureRotationTimer = new RxTimer();
+            pictureRotationTimer.interval(16, count -> {
+                float rotation = Optional.ofNullable(updatePictureRotationLiveData.getValue()).orElse(0f);
+                updatePictureRotationLiveData.setValue(Math.abs(rotation - (360 - growth)) <= 0.1 ? 0 : rotation + growth);
+            });
+        }
+    }
+
+    public void stopPictureRotationTimer() {
+        if (pictureRotationTimer != null) pictureRotationTimer.cancel();
     }
 
 }

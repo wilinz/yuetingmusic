@@ -7,20 +7,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavOptions;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.trello.lifecycle4.android.lifecycle.AndroidLifecycle;
-import com.wilinz.yuetingmusic.Key;
 import com.wilinz.yuetingmusic.R;
-import com.wilinz.yuetingmusic.data.model.User;
 import com.wilinz.yuetingmusic.databinding.FragmentProfileBinding;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
@@ -60,7 +56,7 @@ public class ProfileFragment extends Fragment {
         viewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
         viewModel.getUserLiveData().observe(getViewLifecycleOwner(), user -> {
             if (user != null) {
-                binding.username.setText(user.email);
+                binding.username.setText(user.username);
                 if (user.avatar != null) setAvatarView(Uri.parse(user.avatar));
             }
         });

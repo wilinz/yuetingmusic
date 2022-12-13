@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.wilinz.yuetingmusic.Pref;
 import com.wilinz.yuetingmusic.data.model.User;
+import com.wilinz.yuetingmusic.data.repository.UserRepository;
 import com.wilinz.yuetingmusic.util.MessageDigestUtil;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
@@ -30,28 +31,26 @@ public class LoginOrSignupViewModel extends AndroidViewModel {
 
     public boolean login(User user, String password) {
         boolean isPasswordValid = user.password.equals(MessageDigestUtil.sumSha256(password));
-        if (isPasswordValid) Pref.getInstance(getApplication()).setCurrentLoginEmail(user.email);
+        if (isPasswordValid) {
+            UserRepository.getInstance().changeActive(user, true).subscribe();
+        }
         return isPasswordValid;
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public void signup(String email, String password) {
-        Observable.fromAction(() -> {
-                    User user1 = new User();
-                    user1.email = email;
-                    user1.password = MessageDigestUtil.sumSha256(password);
-                    user1.save();
-                }).subscribeOn(Schedulers.io())
+    public void signup(String username, String password) {
+        UserRepository.getInstance()
+                .signup(username, password)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(o -> {
-
                 }, e -> {
                     signupResult.setValue(false);
+                    e.printStackTrace();
                     Toast.makeText(getApplication(), "注册失败：" + e.toString(), Toast.LENGTH_SHORT).show();
                 }, () -> {
                     signupResult.setValue(true);
                     Toast.makeText(getApplication(), "注册成功", Toast.LENGTH_SHORT).show();
-                    Pref.getInstance(getApplication()).setCurrentLoginEmail(email);
+                    Pref.getInstance(getApplication()).setFirstLaunch(false);
                 });
     }
 

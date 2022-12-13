@@ -86,7 +86,7 @@ public class TopListPlayListAdapter extends RecyclerView.Adapter<TopListPlayList
     @Override
     public int getItemCount() {
         int size = songs.size();
-        return size;
+        return Math.min(size,3);
     }
 
 

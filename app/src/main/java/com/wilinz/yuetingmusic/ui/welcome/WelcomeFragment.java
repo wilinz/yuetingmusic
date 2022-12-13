@@ -1,6 +1,7 @@
 package com.wilinz.yuetingmusic.ui.welcome;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,14 +15,11 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.trello.lifecycle4.android.lifecycle.AndroidLifecycle;
-import com.trello.rxlifecycle4.RxLifecycle;
-import com.trello.rxlifecycle4.android.RxLifecycleAndroid;
 import com.wilinz.yuetingmusic.Key;
+import com.wilinz.yuetingmusic.Pref;
 import com.wilinz.yuetingmusic.R;
-import com.wilinz.yuetingmusic.data.model.User;
 import com.wilinz.yuetingmusic.databinding.FragmentWelcomeBinding;
-
-import java.util.Optional;
+import com.wilinz.yuetingmusic.util.ToastUtilKt;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 
@@ -41,14 +39,19 @@ public class WelcomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(this).get(WelcomeViewModel.class);
         binding.continue1.setOnClickListener(v -> {
-            viewModel.getUser(binding.email.getEditText().getText().toString())
+            String username = binding.username.getEditText().getText().toString().trim();
+            if (TextUtils.isEmpty(username)) {
+                ToastUtilKt.toast(requireContext(), "用户名不能为空");
+                return;
+            }
+            viewModel.getUser(username)
                     .observeOn(AndroidSchedulers.mainThread())
                     .compose(AndroidLifecycle.createLifecycleProvider(getViewLifecycleOwner()).bindToLifecycle())
                     .subscribe(
                             (user -> {
                                 Bundle bundle = new Bundle();
                                 bundle.putParcelable(Key.user, user.orElse(null));
-                                bundle.putString(Key.email, binding.email.getEditText().getText().toString());
+                                bundle.putString(Key.email, binding.username.getEditText().getText().toString());
                                 NavHostFragment.findNavController(this).navigate(R.id.action_WelcomeFragment_to_LoginFragment, bundle);
                             }),
                             err -> {
@@ -63,6 +66,7 @@ public class WelcomeFragment extends Fragment {
             } else {
                 navController.popBackStack();
             }
+            Pref.getInstance(requireContext()).setFirstLaunch(false);
         });
     }
 

@@ -9,9 +9,13 @@ import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
 
+import androidx.annotation.Nullable;
+
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.MediaMetadata;
+import com.wilinz.yuetingmusic.data.model.MusicUrl;
 import com.wilinz.yuetingmusic.data.model.Song;
+import com.wilinz.yuetingmusic.data.model.TopListSong;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -92,13 +96,42 @@ public class MediaUtil {
                 MediaBrowserCompat.MediaItem.FLAG_PLAYABLE);
     }
 
-    public static MediaMetadataCompat getMediaMetadataCompat(MediaItem mediaItem, long duration){
+    public static MediaMetadataCompat getMediaMetadataCompat(MediaItem mediaItem, long duration) {
         return new MediaMetadataCompat.Builder()
                 .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, mediaItem.mediaId)
-                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, mediaItem.mediaMetadata.title+"")
-                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, mediaItem.mediaMetadata.artist+"")
+                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, mediaItem.mediaMetadata.title + "")
+                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, mediaItem.mediaMetadata.artist + "")
                 .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, duration)
-                .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON_URI,mediaItem.mediaMetadata.artworkUri.toString())
+                .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON_URI, mediaItem.mediaMetadata.artworkUri.toString())
                 .build();
+    }
+
+    public static Song getSong(TopListSong.PlaylistBean.TracksBean tracks, MusicUrl.MusicInfo musicInfo, boolean isFilterNullURL) {
+        if (isFilterNullURL && musicInfo.url == null) {
+            return null;
+        }
+        Song song = new Song();
+        song.uri = Uri.parse(musicInfo.url);
+        song.album = tracks.al.name;
+        song.size = musicInfo.size;
+        song.artist = tracks.ar.get(0).name;
+        song.duration = musicInfo.time;
+        song.title = tracks.name;
+        song.coverImgUrl = tracks.al.picUrl;
+        return song;
+    }
+
+    @Nullable
+    public static List<Song> getSongs(List<TopListSong.PlaylistBean.TracksBean> tracks, List<MusicUrl.MusicInfo> musicInfo, boolean isFilterNullURL) {
+        int size = Math.min(tracks.size(), musicInfo.size());
+        ArrayList<Song> songArrayList = new ArrayList<>(size);
+        for (int i = 0; i < size; i++) {
+            Song song = getSong(tracks.get(i), musicInfo.get(i), isFilterNullURL);
+            if (isFilterNullURL && song == null) {
+                return null;
+            }
+            songArrayList.add(song);
+        }
+        return songArrayList;
     }
 }

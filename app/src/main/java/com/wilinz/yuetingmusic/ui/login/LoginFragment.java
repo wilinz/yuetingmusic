@@ -13,9 +13,11 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.wilinz.yuetingmusic.Key;
+import com.wilinz.yuetingmusic.Pref;
 import com.wilinz.yuetingmusic.R;
 import com.wilinz.yuetingmusic.data.model.User;
 import com.wilinz.yuetingmusic.databinding.FragmentLoginBinding;
+import com.wilinz.yuetingmusic.util.ToastUtilKt;
 
 public class LoginFragment extends Fragment {
     private FragmentLoginBinding binding;
@@ -49,12 +51,17 @@ public class LoginFragment extends Fragment {
         binding.forgetPassword.setVisibility(isLoginMode ? View.VISIBLE : View.GONE);
         binding.loginOrSignup.setOnClickListener(v -> {
             String password = binding.password.getEditText().getText().toString();
+            if (!isLoginMode && password.length() < 6) {
+                ToastUtilKt.toast(requireContext(), "密码长度必须大于或等于6位");
+                return;
+            }
             if (isLoginMode) {
                 if (viewModel.login(user, password)) {
-                    Toast.makeText(requireContext(), "登录成功", Toast.LENGTH_SHORT).show();
+                    ToastUtilKt.toast(requireContext(), "登录成功");
                     NavHostFragment.findNavController(this).navigate(R.id.action_LoginFragment_to_MainFragment);
+                    Pref.getInstance(requireContext()).setFirstLaunch(false);
                 } else {
-                    Toast.makeText(requireContext(), "登录失败：密码错误", Toast.LENGTH_SHORT).show();
+                    ToastUtilKt.toast(requireContext(), "登录失败：密码错误");
                 }
             } else {
                 viewModel.signup(email, password);

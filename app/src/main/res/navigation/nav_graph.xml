@@ -4,12 +4,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
     android:fitsSystemWindows="true"
-    app:startDestination="@id/MainFragment">
+    app:startDestination="@id/SplashFragment">
+
+    <fragment
+        android:id="@+id/SplashFragment"
+        android:name="com.wilinz.yuetingmusic.ui.splash.SplashFragment"
+        android:label="SplashFragment"
+        tools:layout="@layout/fragment_splash">
+
+        <action
+            android:id="@+id/action_SplashFragment_to_WelcomeFragment"
+            app:destination="@id/WelcomeFragment" />
+        <action
+            android:id="@+id/action_SplashFragment_to_MainFragment"
+            app:destination="@id/MainFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/WelcomeFragment"
         android:name="com.wilinz.yuetingmusic.ui.welcome.WelcomeFragment"
-        android:label="@string/first_fragment_label"
+        android:label="WelcomeFragment"
         tools:layout="@layout/fragment_welcome">
 
         <action
@@ -36,7 +50,7 @@
     <fragment
         android:id="@+id/MainFragment"
         android:name="com.wilinz.yuetingmusic.ui.main.MainFragment"
-        android:label="@string/second_fragment_label"
+        android:label="MainFragment"
         tools:layout="@layout/fragment_main">
 
         <action
@@ -53,7 +67,7 @@
     <fragment
         android:id="@+id/PlayerFragment"
         android:name="com.wilinz.yuetingmusic.ui.player.PlayerFragment"
-        android:label="@string/second_fragment_label"
+        android:label="PlayerFragment"
         tools:layout="@layout/fragment_player">
 
     </fragment>

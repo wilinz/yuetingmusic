@@ -1,6 +1,5 @@
 package com.wilinz.yuetingmusic;
 
-import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -17,26 +16,26 @@ public class Pref {
     }
 
     public void setPlayMode(int playMode) {
-        preferences.edit().putInt(Key.playMode,playMode).apply();
+        preferences.edit().putInt(Key.playMode, playMode).apply();
     }
 
-    public int getPlayMode(){
+    public int getPlayMode() {
         return preferences.getInt(Key.playMode, PlayMode.ORDERLY);
     }
 
-    public void setCurrentLoginEmail(String email){
-        preferences.edit().putString(Key.currentLoginEmail,email).apply();
+    public boolean isFirstLaunch() {
+        return preferences.getBoolean(Key.isFirstLaunch, true);
     }
 
-    public String getCurrentLoginEmail(){
-        return preferences.getString(Key.currentLoginEmail,"");
+    public void setFirstLaunch(boolean firstLaunch) {
+        preferences.edit().putBoolean(Key.isFirstLaunch, firstLaunch).apply();
     }
 
-    public static Pref getInstance(Application context) {
+    public static Pref getInstance(Context context) {
         if (instance == null) {
             synchronized (Pref.class) {
                 if (instance == null) {
-                    instance = new Pref(context);
+                    instance = new Pref(context.getApplicationContext());
                 }
             }
         }

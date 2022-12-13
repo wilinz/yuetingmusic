@@ -58,6 +58,9 @@ public class HomeViewModel extends MediaControllerViewModel {
                     songs2.addAll(songs1);
                     songs.postValue(songs2);
                     event.postValue(Event.GetMusicsSuccess);
+                },e->{
+                    e.printStackTrace();
+                    ToastUtilKt.toast(getApplication(), "获取数据失败：" + e.getMessage());
                 });
     }
 

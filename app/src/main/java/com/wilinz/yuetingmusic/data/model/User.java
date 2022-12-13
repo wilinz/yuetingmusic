@@ -1,12 +1,12 @@
 package com.wilinz.yuetingmusic.data.model;
 
-import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import org.litepal.annotation.Column;
 import org.litepal.crud.LitePalSupport;
 
+import java.util.List;
 import java.util.Objects;
 
 public class User extends LitePalSupport implements Parcelable {
@@ -19,7 +19,7 @@ public class User extends LitePalSupport implements Parcelable {
         User user = (User) o;
 
         if (id != user.id) return false;
-        if (!Objects.equals(email, user.email)) return false;
+        if (!Objects.equals(username, user.username)) return false;
         if (!Objects.equals(password, user.password))
             return false;
         if (!Objects.equals(nickname, user.nickname))
@@ -31,7 +31,7 @@ public class User extends LitePalSupport implements Parcelable {
     @Override
     public int hashCode() {
         int result = id;
-        result = 31 * result + (email != null ? email.hashCode() : 0);
+        result = 31 * result + (username != null ? username.hashCode() : 0);
         result = 31 * result + (password != null ? password.hashCode() : 0);
         result = 31 * result + (nickname != null ? nickname.hashCode() : 0);
         result = 31 * result + (avatar != null ? avatar.hashCode() : 0);
@@ -43,7 +43,7 @@ public class User extends LitePalSupport implements Parcelable {
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", email='" + email + '\'' +
+                ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", nickname='" + nickname + '\'' +
                 ", avatar='" + avatar + '\'' +
@@ -57,11 +57,15 @@ public class User extends LitePalSupport implements Parcelable {
 
     public int id;
     @Column(unique = true,index = true)
-    public String email;
+    public String username;
     public String password;
     public String nickname;
     public String avatar;
     public String introduction;
+    public List<Song> favoriteSong;
+    public List<Song> recentSong;
+    @Column()
+    public boolean isActive;
 
     @Override
     public int describeContents() {
@@ -71,7 +75,7 @@ public class User extends LitePalSupport implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(this.id);
-        dest.writeString(this.email);
+        dest.writeString(this.username);
         dest.writeString(this.password);
         dest.writeString(this.nickname);
         dest.writeString(this.avatar);
@@ -80,7 +84,7 @@ public class User extends LitePalSupport implements Parcelable {
 
     public void readFromParcel(Parcel source) {
         this.id = source.readInt();
-        this.email = source.readString();
+        this.username = source.readString();
         this.password = source.readString();
         this.nickname = source.readString();
         this.avatar = source.readString();
@@ -89,7 +93,7 @@ public class User extends LitePalSupport implements Parcelable {
 
     protected User(Parcel in) {
         this.id = in.readInt();
-        this.email = in.readString();
+        this.username = in.readString();
         this.password = in.readString();
         this.nickname = in.readString();
         this.avatar = in.readString();
