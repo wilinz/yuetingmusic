@@ -15,6 +15,9 @@
             android:id="@+id/action_UserListFragment_to_WelcomeFragment"
             app:destination="@id/WelcomeFragment" />
 
+        <action
+            android:id="@+id/action_UserListFragment_to_LoginFragment"
+            app:destination="@id/LoginFragment" />
     </fragment>
 
     <fragment

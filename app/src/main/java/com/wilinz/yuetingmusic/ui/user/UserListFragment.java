@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.wilinz.yuetingmusic.Key;
 import com.wilinz.yuetingmusic.R;
 import com.wilinz.yuetingmusic.data.repository.UserRepository;
 import com.wilinz.yuetingmusic.databinding.FragmentUserListBinding;
@@ -37,7 +38,14 @@ public class UserListFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         UserListAdapter adapter = new UserListAdapter(List.of());
         adapter.setOnItemClickListener((users, index, user) -> {
-            viewModel.changeActive(user, true).subscribe();
+            if (user.rememberPassword) {
+                viewModel.changeActive(user, true).subscribe();
+            } else {
+                Bundle bundle = new Bundle();
+                bundle.putParcelable(Key.user, user);
+                bundle.putString(Key.username, user.username);
+                NavHostFragment.findNavController(this).navigate(R.id.action_UserListFragment_to_LoginFragment, bundle);
+            }
         });
         viewModel = new ViewModelProvider(this).get(UserListViewModel.class);
         viewModel.getUsersLiveDate().observe(getViewLifecycleOwner(), users -> {
@@ -49,7 +57,7 @@ public class UserListFragment extends Fragment {
             viewModel.getAllUser().subscribe();
         });
         binding.toolbar.setTitle("所有用户");
-        binding.addUser.setOnClickListener(v->{
+        binding.addUser.setOnClickListener(v -> {
             NavHostFragment.findNavController(this).navigate(R.id.action_UserListFragment_to_WelcomeFragment);
         });
 //        binding.exitLogin.setOnClickListener(v->{

@@ -55,7 +55,7 @@ public class LoginOrSignupFragment extends Fragment {
                 return;
             }
             if (isLoginMode) {
-                if (viewModel.login(user, password)) {
+                if (viewModel.login(user, password, binding.rememberPassword.isChecked())) {
                     ToastUtilKt.toast(requireContext(), "登录成功");
                     NavHostFragment.findNavController(this).navigate(R.id.action_LoginFragment_to_MainFragment);
                     Pref.getInstance(requireContext()).setFirstLaunch(false);
@@ -63,7 +63,7 @@ public class LoginOrSignupFragment extends Fragment {
                     ToastUtilKt.toast(requireContext(), "登录失败：密码错误");
                 }
             } else {
-                viewModel.signup(email, password);
+                viewModel.signup(email, password, binding.rememberPassword.isChecked());
             }
         });
     }

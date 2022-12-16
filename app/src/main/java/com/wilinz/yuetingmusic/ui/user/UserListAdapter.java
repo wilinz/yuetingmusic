@@ -14,6 +14,8 @@ import com.wilinz.yuetingmusic.databinding.ItemUserBinding;
 
 import java.util.List;
 
+import kotlin.collections.CollectionsKt;
+
 public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserListViewHolder> {
 
     private List<User> users;
@@ -52,8 +54,9 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserLi
         ItemUserBinding binding = ItemUserBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
         UserListViewHolder holder = new UserListViewHolder(binding);
         binding.getRoot().setOnClickListener(v -> {
-            if (listener != null) {
-                int index = holder.getAbsoluteAdapterPosition();
+            int currentUserIndex = CollectionsKt.indexOfFirst(users, user -> user.isActive);
+            int index = holder.getAbsoluteAdapterPosition();
+            if (index != currentUserIndex && listener != null) {
                 listener.onItemClick(users, index, users.get(index));
             }
         });
@@ -68,9 +71,9 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserLi
         binding.name.setText(user.username);
 //        binding.serialNumber.setText((position + 1) + "");
         binding.secondName.setText(user.nickname);
-        if (user.isActive){
+        if (user.isActive) {
             binding.tag.setText("当前用户");
-        }else {
+        } else {
             binding.tag.setText("");
         }
         Glide.with(binding.songAvatar)

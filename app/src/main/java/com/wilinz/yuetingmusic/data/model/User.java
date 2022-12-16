@@ -63,6 +63,7 @@ public class User extends LitePalSupport implements Parcelable {
     public String nickname;
     public String avatar;
     public String introduction;
+    public boolean rememberPassword;
     public List<FavoriteSong> favoriteSongs;
     public List<RecentSong> recentSongs;
     @Column()

@@ -27,18 +27,18 @@ public class LoginOrSignupViewModel extends AndroidViewModel {
         super(application);
     }
 
-    public boolean login(User user, String password) {
+    public boolean login(User user, String password,boolean rememberPassword) {
         boolean isPasswordValid = user.password.equals(MessageDigestUtil.sumSha256(password));
         if (isPasswordValid) {
-            UserRepository.getInstance().changeActive(user, true).subscribe();
+            UserRepository.getInstance().changeActive(user, true,rememberPassword).subscribe();
         }
         return isPasswordValid;
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public void signup(String username, String password) {
+    public void signup(String username, String password,boolean rememberPassword) {
         UserRepository.getInstance()
-                .signup(username, password)
+                .signup(username, password,rememberPassword)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(o -> {
                 }, e -> {

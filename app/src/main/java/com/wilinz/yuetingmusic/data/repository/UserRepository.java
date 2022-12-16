@@ -33,6 +33,7 @@ public class UserRepository {
         user.nickname = "访客登录";
         user.username = visitorUserName;
         user.password = "password";
+        user.rememberPassword = true;
         return user;
     }
 
@@ -41,7 +42,7 @@ public class UserRepository {
                 .map(user -> {
                     User visitorUser = getVisitorUser();
                     if (user.isPresent()) {
-                        changeActive(user.get(), true);
+                        changeActive(user.get(), true, true);
                     } else {
                         signup(visitorUser).subscribe();
                     }
@@ -83,7 +84,7 @@ public class UserRepository {
         }).subscribeOn(Schedulers.io());
     }
 
-    public Observable<User> changeActive(User user, boolean isActive) {
+    public Observable<User> changeActive(User user, boolean isActive, boolean... rememberPassword) {
         return Observable.fromCallable(() -> {
             LitePal.beginTransaction();
 
@@ -92,7 +93,10 @@ public class UserRepository {
             } else {
                 user.setToDefault("isactive");
             }
-
+            if (rememberPassword.length > 0) {
+                if (rememberPassword[0]) user.rememberPassword = true;
+                else user.setToDefault("rememberpassword");
+            }
             user.isActive = isActive;
             user.updateAll("username = ?", user.username);
             LitePal.setTransactionSuccessful();
@@ -112,12 +116,14 @@ public class UserRepository {
         LitePal.updateAll(User.class, values, "isactive = ?", 1 + "");
     }
 
-    public Observable<User> signup(String username, String password) {
+    public Observable<User> signup(String username, String password, boolean rememberPassword) {
         return Observable.fromCallable(() -> {
             User user1 = new User();
             user1.nickname = username;
             user1.username = username;
             user1.password = MessageDigestUtil.sumSha256(password);
+            if (rememberPassword) user1.rememberPassword = true;
+            else user1.setToDefault("rememberpassword");
             user1.isActive = true;
 
             LitePal.beginTransaction();

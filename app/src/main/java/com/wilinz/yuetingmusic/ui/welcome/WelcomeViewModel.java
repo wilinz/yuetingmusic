@@ -37,7 +37,7 @@ public class WelcomeViewModel extends AndroidViewModel {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public void signupVisitor() {
         UserRepository.getInstance()
-                .signup(UserRepository.getInstance().getVisitorUser())
+                .loginOrSignupVisitorUser()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(o -> {
                 }, e -> {

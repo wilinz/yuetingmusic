@@ -42,8 +42,8 @@ public class UserListViewModel extends ViewModel {
         return UserRepository.getInstance().loginOrSignupVisitorUser();
     }
 
-    public Observable<User> changeActive(User user, boolean isActive) {
-        return UserRepository.getInstance().changeActive(user, isActive);
+    public Observable<User> changeActive(User user, boolean isActive, boolean... rememberPassword) {
+        return UserRepository.getInstance().changeActive(user, isActive, rememberPassword);
     }
 
     protected MutableLiveData<Boolean> refreshingLiveData = new MutableLiveData<>();
@@ -53,7 +53,7 @@ public class UserListViewModel extends ViewModel {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void refreshUser(UserChangeEvent event){
+    public void refreshUser(UserChangeEvent event) {
         getAllUser().subscribe();
     }
 
