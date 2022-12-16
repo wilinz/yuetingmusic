@@ -7,12 +7,15 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.wilinz.yuetingmusic.data.model.TopList;
 import com.wilinz.yuetingmusic.data.model.TopListSong;
 import com.wilinz.yuetingmusic.databinding.ItemTopListBinding;
 
 import java.util.List;
+
+import io.reactivex.rxjava3.core.Observable;
 
 public class TopListAdapter extends RecyclerView.Adapter<TopListAdapter.MyViewHolder> {
 
@@ -25,12 +28,22 @@ public class TopListAdapter extends RecyclerView.Adapter<TopListAdapter.MyViewHo
 
     private OnGetTracksListener onGettracksListener;
 
+    public void setOnRefresh(OnRefresh onRefresh) {
+        this.onRefresh = onRefresh;
+    }
+
     interface OnItemClickListener {
         void onItemClick(int index0, int index1, List<TopListSong.PlaylistBean.TracksBean> songs, TopListSong.PlaylistBean.TracksBean song);
     }
 
     interface OnGetTracksListener {
         void get(int index);
+    }
+
+    private OnRefresh onRefresh;
+
+    public interface OnRefresh {
+        void run(SwipeRefreshLayout layout);
     }
 
     public void setItem(TopList.ListBean listBean, int index) {
@@ -58,7 +71,7 @@ public class TopListAdapter extends RecyclerView.Adapter<TopListAdapter.MyViewHo
 
     static class MyViewHolder extends RecyclerView.ViewHolder {
 
-        ItemTopListBinding binding;
+        public ItemTopListBinding binding;
 
         public MyViewHolder(@NonNull ItemTopListBinding binding) {
             super(binding.getRoot());
@@ -84,6 +97,11 @@ public class TopListAdapter extends RecyclerView.Adapter<TopListAdapter.MyViewHo
 //                int index = holder.getAbsoluteAdapterPosition();
 //                listener.onItemClick(songs, index, songs.get(index));
 //            }
+        });
+        binding.swipeRefresh.setOnRefreshListener(() -> {
+            if (this.onRefresh != null) {
+                onRefresh.run(binding.swipeRefresh);
+            }
         });
         return holder;
     }

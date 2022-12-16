@@ -25,11 +25,13 @@ import com.wilinz.yuetingmusic.util.ToastUtilKt;
 import java.util.List;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observable;
 import kotlin.collections.CollectionsKt;
 
 public class HomeFragment extends Fragment {
     private FragmentHomeBinding binding;
     private HomeViewModel viewModel;
+
 
     private static String TAG = "HomeFragment";
 
@@ -92,12 +94,12 @@ public class HomeFragment extends Fragment {
         });
        /* binding.musicList.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.musicList.setAdapter(adapter);*/
-        binding.swipeRefresh.setOnRefreshListener(()->{
-            viewModel.getTopList();
-        });
 
-        viewModel.getRefreshingLiveData().observe(getViewLifecycleOwner(), isRefreshing -> {
-            binding.swipeRefresh.setRefreshing(isRefreshing != null ? isRefreshing : false);
+        adapter0.setOnRefresh(v -> {
+            viewModel.getTopList()
+                    .compose(AndroidLifecycle.createLifecycleProvider(getViewLifecycleOwner()).bindToLifecycle())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(s -> v.setRefreshing(false));
         });
     }
 
@@ -123,7 +125,6 @@ public class HomeFragment extends Fragment {
             adapter.set(topList);
         });
     }
-
 
 
     @Override

@@ -7,11 +7,7 @@
     android:fitsSystemWindows="true"
     >
 
-        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipe_refresh"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -40,7 +36,6 @@
                     android:nestedScrollingEnabled="false"
                     android:layout_weight="1"/>
             </LinearLayout>
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <!--    <com.google.android.material.appbar.AppBarLayout-->
     <!--        android:layout_width="match_parent"-->

@@ -29,10 +29,10 @@ public class HomeViewModel extends MediaControllerViewModel {
 
     public HomeViewModel(@NonNull Application application) {
         super(application);
-        getTopList();
+        getTopList().subscribe();
     }
 
-    protected MutableLiveData<Boolean> refreshingLiveData = new MutableLiveData<>();
+    public MutableLiveData<Boolean> refreshingLiveData = new MutableLiveData<>();
 
     public LiveData<Boolean> getRefreshingLiveData() {
         return refreshingLiveData;
@@ -68,13 +68,14 @@ public class HomeViewModel extends MediaControllerViewModel {
                 });
     }
 
-    public void getTopList() {
-        TopListRepository.getInstance().get()
+    public Observable<TopList> getTopList() {
+        return TopListRepository.getInstance().get()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(topList -> {
+                .doOnNext(topList -> {
                     refreshingLiveData.setValue(false);
                     topListLiveData.setValue(topList.list);
-                }, err -> {
+                })
+                .doOnError(err -> {
                     err.printStackTrace();
                     ToastUtilKt.toast(getApplication(), "网络连接失败：" + err.getMessage());
                 });
