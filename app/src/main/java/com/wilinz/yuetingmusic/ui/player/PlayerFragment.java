@@ -3,11 +3,15 @@ package com.wilinz.yuetingmusic.ui.player;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.palette.graphics.Palette;
 
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
@@ -16,16 +20,25 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SeekBar;
 
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.target.CustomViewTarget;
+import com.bumptech.glide.request.transition.Transition;
+import com.wilinz.yuetingmusic.Key;
 import com.wilinz.yuetingmusic.R;
 import com.wilinz.yuetingmusic.constant.PlayMode;
 import com.wilinz.yuetingmusic.databinding.FragmentPlayerBinding;
+import com.wilinz.yuetingmusic.player.MyNotificationManager;
 import com.wilinz.yuetingmusic.util.LogUtil;
 import com.wilinz.yuetingmusic.util.ScreenUtil;
 import com.wilinz.yuetingmusic.util.TimeUtil;
+import com.wilinz.yuetingmusic.util.UriUtil;
+
+import java.util.Objects;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
 
@@ -69,12 +82,31 @@ public class PlayerFragment extends Fragment {
         binding.skipToNext.setOnClickListener(v -> {
             viewModel.skipToNext();
         });
-        binding.currentProgress.setLabelFormatter((value) -> TimeUtil.format((long) value));
-        binding.currentProgress.addOnChangeListener((slider, value, fromUser) -> {
-            if (fromUser) viewModel.seekTo((long) value);
+//        binding.currentProgress.setLabelFormatter((value) -> TimeUtil.format((long) value));
+//        binding.currentProgress.addOnChangeListener((slider, value, fromUser) -> {
+//            if (fromUser) viewModel.seekTo((long) value);
+//        });
+        binding.currentProgress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                viewModel.seekTo(seekBar.getProgress());
+            }
         });
         binding.switchPlayMode.setOnClickListener(v -> {
             viewModel.switchPlayMode();
+        });
+        binding.favorite.setOnClickListener(v -> {
+            viewModel.saveFavoriteSong();
         });
     }
 
@@ -112,20 +144,45 @@ public class PlayerFragment extends Fragment {
     }
 
     private void updatePosition(long position) {
-        if (position <= binding.currentProgress.getValueTo()) {
-            binding.currentProgress.setValue(position);
-            binding.currentProgressTime.setText(TimeUtil.format(position));
+        if (position <= binding.currentProgress.getMax()) {
+            try {
+                binding.currentProgress.setProgress((int) position);
+                binding.currentProgressTime.setText(TimeUtil.format(position));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private void updateMetadata(MediaMetadataCompat metadata) {
         if (metadata == null) return;
         MediaDescriptionCompat description = metadata.getDescription();
-        binding.songName.setText(description.getTitle().toString() + " - " + description.getSubtitle());
-        Glide.with(requireContext())
+        binding.name.setText(description.getTitle() + " - " + description.getSubtitle());
+
+        if (!description.getIconUri().equals(UriUtil.idToUri(requireContext(), R.drawable.icon))) {
+            Glide.with(requireContext())
+                    .load(description.getIconUri())
+                    .apply(RequestOptions.bitmapTransform(new BlurTransformation(50, 3)))
+                    .into(binding.backgroundImage);
+        }
+
+        /*    Glide.with(requireContext())
+                .asBitmap()
                 .load(description.getIconUri())
                 .apply(RequestOptions.bitmapTransform(new BlurTransformation(50, 3)))
-                .into(binding.backgroundImage);
+                .into(new CustomTarget<Bitmap>(binding.backgroundImage.getWidth(), binding.backgroundImage.getHeight()) {
+            @Override
+            public void onResourceReady(@NonNull Bitmap bitmap, @Nullable Transition<? super Bitmap> transition) {
+                Palette.from(bitmap)
+                        .
+            }
+
+            @Override
+            public void onLoadCleared(@Nullable Drawable placeholder) {
+
+            }
+        });*/
         Glide.with(requireContext())
                 .load(description.getIconUri())
                 .error(R.drawable.logo)
@@ -134,7 +191,8 @@ public class PlayerFragment extends Fragment {
         Log.d(TAG, "updateMetadata: " + duration + ", " + TimeUtil.format(duration));
         if (duration > 0) {
             Log.d(TAG, "updateMetadata2: " + duration + ", " + TimeUtil.format(duration));
-            binding.currentProgress.setValueTo(duration);
+//            binding.currentProgress.setProgress(0);
+            binding.currentProgress.setMax((int) duration);
             binding.duration.setText(TimeUtil.format(duration));
         }
     }

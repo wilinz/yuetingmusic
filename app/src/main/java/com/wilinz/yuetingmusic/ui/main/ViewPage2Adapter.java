@@ -3,8 +3,8 @@ package com.wilinz.yuetingmusic.ui.main;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 
-import com.wilinz.yuetingmusic.ui.main.favorite.FavoriteFragment;
 import com.wilinz.yuetingmusic.ui.main.home.HomeFragment;
 import com.wilinz.yuetingmusic.ui.main.profile.ProfileFragment;
 

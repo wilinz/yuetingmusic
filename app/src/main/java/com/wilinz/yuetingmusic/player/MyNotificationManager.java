@@ -4,12 +4,15 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
@@ -22,16 +25,17 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.drawable.DrawableKt;
 import androidx.media.session.MediaButtonReceiver;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.CustomTarget;
-import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
+import com.wilinz.yuetingmusic.Key;
 import com.wilinz.yuetingmusic.MainActivity;
+import com.wilinz.yuetingmusic.Pref;
 import com.wilinz.yuetingmusic.R;
+import com.wilinz.yuetingmusic.constant.PlayMode;
 
 import java.util.Objects;
 
@@ -115,6 +119,25 @@ public class MyNotificationManager {
         MediaControllerCompat controller = mediaSession.getController();
         MediaMetadataCompat mediaMetadata = controller.getMetadata();
 
+        int playMode = Pref.getInstance(context).getPlayMode();
+        PlaybackStateCompat state = controller.getPlaybackState();
+        Bundle bundle = state.getExtras();
+        if (bundle != null) {
+            int playMode1 = state.getExtras().getInt(Key.playMode, PlayMode.UNKNOWN);
+            if (playMode1 != PlayMode.UNKNOWN) {
+                playMode = playMode1;
+            }
+        }
+
+        int playModeResId = 0;
+        if (playMode == PlayMode.ORDERLY) {
+            playModeResId = R.drawable.round_repeat_24;
+        } else if (playMode == PlayMode.SINGLE_LOOP) {
+            playModeResId = R.drawable.round_repeat_one_24;
+        } else {
+            playModeResId = R.drawable.round_shuffle_24;
+        }
+
         Uri iconUri = null;
         if (mediaMetadata != null) {
             MediaDescriptionCompat description = mediaMetadata.getDescription();
@@ -138,6 +161,10 @@ public class MyNotificationManager {
 
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, new Intent(context, MainActivity.class), PendingIntent.FLAG_MUTABLE);
 
+        PendingIntent favoritePendingIntent = PendingIntent.getBroadcast(context, 0, new Intent(PlayerBroadcastReceiver.ACTION_SAVE_CURRENT_SONG_TO_FAVORITE), PendingIntent.FLAG_MUTABLE);
+
+        PendingIntent switchPlayModePendingIntent = PendingIntent.getBroadcast(context, 0, new Intent(PlayerBroadcastReceiver.ACTION_SWITCH_PLAYBACK_MODE), PendingIntent.FLAG_MUTABLE);
+
         builder
                 // 添加当前播放曲目的元数据
                 .setContentTitle(title)
@@ -158,7 +185,12 @@ public class MyNotificationManager {
                 // 添加应用程序图标并设置其强调色
                 // 注意颜色
                 .setSmallIcon(R.drawable.logo)
-                .setColor(ContextCompat.getColor(context, R.color.my_light_primary))
+                .setColor(ContextCompat.getColor(context, R.color.my_primary))
+
+                .addAction(new NotificationCompat.Action(
+                        R.drawable.outline_favorite_border_24, context.getString(R.string.favorite),
+                        favoritePendingIntent
+                ))
 
                 .addAction(new NotificationCompat.Action(
                         R.drawable.skip_previous, context.getString(R.string.skip_previous),
@@ -175,6 +207,11 @@ public class MyNotificationManager {
                         R.drawable.skip_next, context.getString(R.string.skip_next),
                         MediaButtonReceiver.buildMediaButtonPendingIntent(context,
                                 PlaybackStateCompat.ACTION_SKIP_TO_NEXT)))
+
+                .addAction(new NotificationCompat.Action(
+                        playModeResId, context.getString(R.string.switch_playback_modes),
+                        switchPlayModePendingIntent))
+
                 // 利用 MediaStyle 功能
                 .setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
                         .setMediaSession(mediaSession.getSessionToken())
@@ -217,4 +254,41 @@ public class MyNotificationManager {
         return builder;
 
     }
+
+    private final PlayerBroadcastReceiver playerBroadcastReceiver = new PlayerBroadcastReceiver();
+    private final IntentFilter intentFilter = new IntentFilter(PlayerBroadcastReceiver.ACTION_SAVE_CURRENT_SONG_TO_FAVORITE);
+
+    public void registerPlayerBroadcastReceiver() {
+        if (!intentFilter.hasAction(PlayerBroadcastReceiver.ACTION_SWITCH_PLAYBACK_MODE)) {
+            intentFilter.addAction(PlayerBroadcastReceiver.ACTION_SWITCH_PLAYBACK_MODE);
+        }
+        context.registerReceiver(playerBroadcastReceiver, intentFilter);
+    }
+
+    //MediaSessionCompat.Callback onStop时调用
+    public void unregisterPlayerBroadcastReceiver() {
+        try {
+            context.unregisterReceiver(playerBroadcastReceiver);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    class PlayerBroadcastReceiver extends BroadcastReceiver {
+
+        public final static String ACTION_SAVE_CURRENT_SONG_TO_FAVORITE = "com.wilinz.yuetingmusic.ACTION_SAVE_TO_FAVORITE";
+
+        public final static String ACTION_SWITCH_PLAYBACK_MODE = "com.wilinz.yuetingmusic.ACTION_SWITCH_PLAYBACK_MODE";
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(ACTION_SAVE_CURRENT_SONG_TO_FAVORITE)) {
+                mediaSession.getController().getTransportControls().sendCustomAction(PlayerManager.ACTION_SAVE_CURRENT_SONG_TO_FAVORITE, null);
+            } else if (intent.getAction().equals(ACTION_SWITCH_PLAYBACK_MODE)) {
+                PlayerManager.switchPlayMode(mediaSession.getController().getTransportControls(), Pref.getInstance(context).getPlayMode());
+            }
+        }
+
+    }
+
 }

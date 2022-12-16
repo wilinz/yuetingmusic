@@ -3,4 +3,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="default_cover_bg">#EAF0FC</color>
+    <color name="my_primary">#29B6F6</color>
+    <color name="shrine_pink_100">#E1F5FE</color>
+    <color name="shrine_pink_900">#01579B</color>
 </resources>

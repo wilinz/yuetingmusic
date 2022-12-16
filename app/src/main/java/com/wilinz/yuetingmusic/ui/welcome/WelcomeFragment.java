@@ -38,6 +38,17 @@ public class WelcomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(this).get(WelcomeViewModel.class);
+        viewModel.getSignupResult().observe(getViewLifecycleOwner(), success -> {
+            if (success) {
+                NavController navController = NavHostFragment.findNavController(this);
+                if (navController.getPreviousBackStackEntry() == null) {
+                    navController.navigate(R.id.action_FirstFragment_to_MainFragment);
+                } else {
+                    navController.popBackStack();
+                }
+                Pref.getInstance(requireContext()).setFirstLaunch(false);
+            }
+        });
         binding.continue1.setOnClickListener(v -> {
             String username = binding.username.getEditText().getText().toString().trim();
             if (TextUtils.isEmpty(username)) {
@@ -51,7 +62,7 @@ public class WelcomeFragment extends Fragment {
                             (user -> {
                                 Bundle bundle = new Bundle();
                                 bundle.putParcelable(Key.user, user.orElse(null));
-                                bundle.putString(Key.email, binding.username.getEditText().getText().toString());
+                                bundle.putString(Key.username, binding.username.getEditText().getText().toString());
                                 NavHostFragment.findNavController(this).navigate(R.id.action_WelcomeFragment_to_LoginFragment, bundle);
                             }),
                             err -> {
@@ -62,7 +73,7 @@ public class WelcomeFragment extends Fragment {
         binding.notLoggedIn.setOnClickListener(v -> {
             NavController navController = NavHostFragment.findNavController(this);
             if (navController.getPreviousBackStackEntry() == null) {
-                navController.navigate(R.id.action_FirstFragment_to_MainFragment);
+                viewModel.signupVisitor();
             } else {
                 navController.popBackStack();
             }

@@ -1,10 +1,9 @@
-package com.wilinz.yuetingmusic.ui.login;
+package com.wilinz.yuetingmusic.ui.signinsignup;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,7 +18,7 @@ import com.wilinz.yuetingmusic.data.model.User;
 import com.wilinz.yuetingmusic.databinding.FragmentLoginBinding;
 import com.wilinz.yuetingmusic.util.ToastUtilKt;
 
-public class LoginFragment extends Fragment {
+public class LoginOrSignupFragment extends Fragment {
     private FragmentLoginBinding binding;
     private boolean isLoginMode = false;
     private LoginOrSignupViewModel viewModel;
@@ -43,7 +42,7 @@ public class LoginFragment extends Fragment {
         Bundle bundle = NavHostFragment.findNavController(this).getCurrentBackStackEntry().getArguments();
         if (bundle == null) return;
         User user = bundle.getParcelable(Key.user);
-        String email = bundle.getString(Key.email);
+        String email = bundle.getString(Key.username);
         isLoginMode = user != null;
         int textResId = isLoginMode ? R.string.login : R.string.signup;
         binding.loginOrSignup.setText(textResId);

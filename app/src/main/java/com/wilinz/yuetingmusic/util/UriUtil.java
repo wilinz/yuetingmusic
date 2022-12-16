@@ -52,4 +52,10 @@ public class UriUtil {
         return file;
     }
 
+    public static final String RESOURCE = "android.resource://";
+
+    public static Uri idToUri(Context context, int resourceId) {
+        return Uri.parse(RESOURCE + context.getPackageName() + "/" + resourceId);
+    }
+
 }

@@ -38,13 +38,29 @@
                     app:shapeAppearanceOverlay="@style/cornerStyle"
                     app:srcCompat="@drawable/avatar2" />
 
-                <TextView
-                    android:id="@+id/username"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:text="用户名"
-                    android:textSize="16sp" />
+                    android:orientation="vertical"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/username"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:text="用户名"
+                        android:textSize="16sp" />
+                    <TextView
+                        android:id="@+id/nickname"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/darker_gray"
+                        android:layout_marginStart="16dp"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
 
             </LinearLayout>
 
@@ -107,14 +123,19 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                >
 
                 <LinearLayout
+                    android:id="@+id/play_history"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true">
 
                     <com.google.android.material.imageview.ShapeableImageView
                         android:layout_width="48dp"
@@ -132,11 +153,15 @@
 
 
                 <LinearLayout
+                    android:id="@+id/favorite"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true">
 
                     <com.google.android.material.imageview.ShapeableImageView
                         android:layout_width="48dp"
@@ -153,11 +178,15 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/local_music"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true">
 
                     <com.google.android.material.imageview.ShapeableImageView
                         android:layout_width="48dp"
@@ -174,11 +203,15 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/settings"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true">
 
                     <com.google.android.material.imageview.ShapeableImageView
                         android:layout_width="48dp"
@@ -203,8 +236,10 @@
                 android:layout_gravity="start"
                 android:text="最近播放"/>
 
-            <include
-                layout="@layout/item_music"/>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recent_play"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
         </LinearLayout>
 

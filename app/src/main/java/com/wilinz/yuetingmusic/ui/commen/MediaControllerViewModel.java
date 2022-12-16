@@ -3,6 +3,7 @@ package com.wilinz.yuetingmusic.ui.commen;
 import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.ComponentName;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.media.MediaBrowserCompat;
@@ -21,6 +22,7 @@ import com.wilinz.yuetingmusic.Pref;
 import com.wilinz.yuetingmusic.constant.PlayMode;
 import com.wilinz.yuetingmusic.data.model.Song;
 import com.wilinz.yuetingmusic.player.MusicService;
+import com.wilinz.yuetingmusic.player.PlayerManager;
 import com.wilinz.yuetingmusic.util.RxTimer;
 
 import java.util.ArrayList;
@@ -101,7 +103,7 @@ public class MediaControllerViewModel extends AndroidViewModel {
     public void playFromUri(List<Song> songs, Song song) {
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList(Key.songList, (ArrayList<? extends Parcelable>) songs);
-        mediaController.getTransportControls().playFromUri(song.uri, bundle);
+        mediaController.getTransportControls().playFromUri(Uri.parse(song.url), bundle);
     }
 
     private void buildTransportControls() {
@@ -164,13 +166,7 @@ public class MediaControllerViewModel extends AndroidViewModel {
     public void switchPlayMode() {
         Integer playModeInteger = getPlayModeLiveData().getValue();
         int playMode = playModeInteger != null ? playModeInteger : PlayMode.ORDERLY;
-        if (playMode == PlayMode.ORDERLY) {
-            mediaController.getTransportControls().setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ONE);
-        } else if (playMode == PlayMode.SINGLE_LOOP) {
-            mediaController.getTransportControls().setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_ALL);
-        } else {
-            mediaController.getTransportControls().setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ALL);
-        }
+        PlayerManager.switchPlayMode(mediaController.getTransportControls(), playMode);
     }
 
     private void updatePlaybackState(PlaybackStateCompat state) {

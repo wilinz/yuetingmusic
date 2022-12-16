@@ -1,4 +1,4 @@
-package com.wilinz.yuetingmusic.ui.login;
+package com.wilinz.yuetingmusic.ui.signinsignup;
 
 import android.app.Application;
 import android.widget.Toast;
@@ -13,8 +13,6 @@ import com.wilinz.yuetingmusic.data.repository.UserRepository;
 import com.wilinz.yuetingmusic.util.MessageDigestUtil;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class LoginOrSignupViewModel extends AndroidViewModel {
 

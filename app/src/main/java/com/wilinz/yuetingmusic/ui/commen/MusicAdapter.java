@@ -1,4 +1,4 @@
-package com.wilinz.yuetingmusic.ui.main.home;
+package com.wilinz.yuetingmusic.ui.commen;
 
 import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.wilinz.yuetingmusic.R;
 import com.wilinz.yuetingmusic.data.model.Song;
 import com.wilinz.yuetingmusic.databinding.ItemMusicBinding;
 
@@ -17,7 +19,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHol
     private List<Song> songs;
     private OnItemClickListener listener;
 
-    interface OnItemClickListener {
+    public interface OnItemClickListener {
         void onItemClick(List<Song> songs, int index, Song song);
     }
 
@@ -62,9 +64,14 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHol
     @Override
     public void onBindViewHolder(@NonNull MusicViewHolder holder, int position) {
         ItemMusicBinding binding = holder.binding;
-        Song music = songs.get(position);
-        binding.name.setText(music.title);
-        binding.desc.setText(music.artist + "-" + music.album);
+        Song song = songs.get(position);
+        binding.name.setText(song.title);
+        binding.serialNumber.setText((position + 1) + "");
+        binding.secondName.setText(song.artist + "-" + song.album);
+        Glide.with(binding.songAvatar)
+                .load(song.coverImgUrl)
+                .error(R.drawable.icon)
+                .into(binding.songAvatar);
     }
 
     @Override

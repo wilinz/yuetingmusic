@@ -4,11 +4,9 @@ import android.app.Application;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.wilinz.yuetingmusic.data.AppNewWork;
 import com.wilinz.yuetingmusic.data.model.MusicUrl;
 import com.wilinz.yuetingmusic.data.model.Song;
 import com.wilinz.yuetingmusic.data.model.TopList;
@@ -34,6 +32,12 @@ public class HomeViewModel extends MediaControllerViewModel {
         getTopList();
     }
 
+    protected MutableLiveData<Boolean> refreshingLiveData = new MutableLiveData<>();
+
+    public LiveData<Boolean> getRefreshingLiveData() {
+        return refreshingLiveData;
+    }
+
     public LiveData<List<Song>> getSongs() {
         return songs;
     }
@@ -51,7 +55,7 @@ public class HomeViewModel extends MediaControllerViewModel {
     private MutableLiveData<List<TopList.ListBean>> topListLiveData = new MutableLiveData<>();
 
     public void getMusics(@NonNull Context context) {
-        SongRepository.getMusics(context)
+        SongRepository.getInstance().getLocalMusic(context)
                 .subscribe(songs1 -> {
                     List<Song> songs2 = new ArrayList<>();
                     songs2.addAll(songs1);
@@ -68,6 +72,7 @@ public class HomeViewModel extends MediaControllerViewModel {
         TopListRepository.getInstance().get()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(topList -> {
+                    refreshingLiveData.setValue(false);
                     topListLiveData.setValue(topList.list);
                 }, err -> {
                     err.printStackTrace();

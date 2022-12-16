@@ -1,0 +1,29 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="@string/about">
+
+        <Preference
+            android:icon="@drawable/ic_outline_groups_24"
+            android:key="app_author"
+            android:title="@string/author"
+            android:summary="https://github.com/wilinz"
+            app:enableCopying="true" />
+
+        <Preference
+            android:icon="@drawable/github_fill"
+            android:key="source_code"
+            android:title="源码"
+            android:summary="https://github.com/wilinz/yuetingmusic"
+            app:enableCopying="true" />
+
+        <Preference
+            android:icon="@drawable/version"
+            android:key="app_version"
+            android:title="版本"
+            android:summary="1.0.1"
+            app:enableCopying="true" />
+    </PreferenceCategory>
+
+
+</PreferenceScreen>

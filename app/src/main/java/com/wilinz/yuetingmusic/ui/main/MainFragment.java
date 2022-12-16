@@ -110,7 +110,7 @@ public class MainFragment extends Fragment {
         Glide.with(requireContext())
                 .load(description.getIconUri())
                 .into(binding.songAvatar);
-        binding.songName.setText(description.getTitle().toString() + " - " + description.getSubtitle());
+        binding.name.setText(description.getTitle().toString() + " - " + description.getSubtitle());
     }
 
     private void updatePlaybackState(PlaybackStateCompat state) {

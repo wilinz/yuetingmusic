@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="default_cover_bg">#111111</color>
+    <color name="my_primary">#D1BCFF</color>
+    <color name="shrine_pink_100">#E1F5FE</color>
+    <color name="shrine_pink_900">#01579B</color>
 </resources>

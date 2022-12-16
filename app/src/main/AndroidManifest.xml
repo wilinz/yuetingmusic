@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-sdk tools:overrideLibrary="com.github.guilhe.views.circularprogress"/>
+    <uses-sdk tools:overrideLibrary="com.github.guilhe.views.circularprogress,rikka.widget.mainswitchbar,androidx.appcompat"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -23,16 +23,13 @@
         <service
             android:name=".player.MusicService"
             android:enabled="true"
-            android:exported="true">
+            android:exported="true"
+            android:foregroundServiceType="mediaPlayback"
+            >
             <intent-filter>
                 <action android:name="android.media.browse.MediaBrowserService" />
             </intent-filter>
         </service>
-        <service
-            android:name=".player.PlayerService"
-            android:enabled="true"
-            android:exported="true"
-            android:foregroundServiceType="mediaPlayback" />
 
         <activity
             android:name=".MainActivity"
@@ -54,6 +51,15 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="com.wilinz.yuetingmusic.player.MyNotificationManager$PlayerBroadcastReceiver"
+            android:exported="true"
+            tools:ignore="Instantiatable">
+            <intent-filter>
+                <action android:name="com.wilinz.yuetingmusic.ACTION_SAVE_TO_FAVORITE" />
+                <action android:name="com.wilinz.yuetingmusic.ACTION_SWITCH_PLAYBACK_MODE" />
             </intent-filter>
         </receiver>
     </application>

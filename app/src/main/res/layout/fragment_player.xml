@@ -48,23 +48,40 @@
                     android:layout_width="300dp"
                     android:layout_height="300dp"
                     android:scaleType="centerCrop"
+                    android:elevation="16dp"
                     app:shapeAppearanceOverlay="@style/roundStyle"
                     app:srcCompat="@drawable/logo" />
 
             </LinearLayout>
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/favorite"
+                    style="@style/Widget.Material3.Button.IconButtonFixed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:icon="@drawable/outline_favorite_border_24"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
             <TextView
-                android:id="@+id/song_name"
+                android:id="@+id/name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="18sp"
                 android:layout_marginStart="8dp"
                 android:text="起风了"/>
 
-            <com.google.android.material.slider.Slider
+            <androidx.appcompat.widget.AppCompatSeekBar
                 android:id="@+id/current_progress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:thumbTint="@color/my_primary"
+                android:progressTint="@color/my_primary"
                 android:valueFrom="0.0"
                 android:valueTo="100.0" />
 

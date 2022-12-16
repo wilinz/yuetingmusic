@@ -7,6 +7,44 @@
     app:startDestination="@id/SplashFragment">
 
     <fragment
+        android:id="@+id/UserListFragment"
+        android:name="com.wilinz.yuetingmusic.ui.user.UserListFragment"
+        android:label="UserListFragment">
+
+        <action
+            android:id="@+id/action_UserListFragment_to_WelcomeFragment"
+            app:destination="@id/WelcomeFragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/SettingsFragment"
+        android:name="com.wilinz.yuetingmusic.ui.settings.SettingsFragment"
+        android:label="SettingsFragment">
+    </fragment>
+
+    <fragment
+        android:id="@+id/FavoriteListFragment"
+        android:name="com.wilinz.yuetingmusic.ui.favorite.FavoriteListFragment"
+        android:label="FavoriteListFragment"
+        tools:layout="@layout/fragment_playlist_container">
+    </fragment>
+
+    <fragment
+        android:id="@+id/LocalMusicFragment"
+        android:name="com.wilinz.yuetingmusic.ui.local.LocalListFragment"
+        android:label="LocalMusicFragment"
+        tools:layout="@layout/fragment_playlist_container">
+    </fragment>
+
+    <fragment
+        android:id="@+id/RecentListFragment"
+        android:name="com.wilinz.yuetingmusic.ui.recent.RecentListFragment"
+        android:label="RecentListFragment"
+        tools:layout="@layout/fragment_playlist_container">
+    </fragment>
+
+    <fragment
         android:id="@+id/SplashFragment"
         android:name="com.wilinz.yuetingmusic.ui.splash.SplashFragment"
         android:label="SplashFragment"
@@ -35,7 +73,7 @@
     </fragment>
     <fragment
         android:id="@+id/LoginFragment"
-        android:name="com.wilinz.yuetingmusic.ui.login.LoginFragment"
+        android:name="com.wilinz.yuetingmusic.ui.signinsignup.LoginOrSignupFragment"
         android:label="@string/second_fragment_label"
         tools:layout="@layout/fragment_login">
 
@@ -63,6 +101,25 @@
             android:id="@+id/action_MainFragment_to_WelcomeFragment"
             app:destination="@id/WelcomeFragment" />
 
+        <action
+            android:id="@+id/action_MainFragment_to_FavoriteListFragment"
+            app:destination="@id/FavoriteListFragment" />
+
+        <action
+            android:id="@+id/action_MainFragment_to_LocalMusicFragment"
+            app:destination="@id/LocalMusicFragment" />
+
+        <action
+            android:id="@+id/action_MainFragment_to_RecentListFragment"
+            app:destination="@id/RecentListFragment" />
+
+        <action
+            android:id="@+id/action_MainFragment_to_SettingsFragment"
+            app:destination="@id/SettingsFragment" />
+
+        <action
+            android:id="@+id/action_MainFragment_to_UserListFragment"
+            app:destination="@id/UserListFragment" />
     </fragment>
     <fragment
         android:id="@+id/PlayerFragment"

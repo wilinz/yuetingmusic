@@ -11,12 +11,14 @@ import androidx.annotation.Nullable;
 import androidx.media.MediaBrowserServiceCompat;
 
 import com.wilinz.yuetingmusic.data.model.Song;
+import com.wilinz.yuetingmusic.data.repository.SongRepository;
 import com.wilinz.yuetingmusic.util.LogUtil;
 
 import java.util.List;
 
 import kotlin.collections.CollectionsKt;
 
+@SuppressWarnings("all")
 public class MusicService extends MediaBrowserServiceCompat {
 
     private static final String MY_MEDIA_ROOT_ID = "media_root_id";
@@ -27,7 +29,7 @@ public class MusicService extends MediaBrowserServiceCompat {
     private PlaybackStateCompat.Builder stateBuilder;
     private MyAudioManager myAudioManager;
     private MyNotificationManager myNotificationManager;
-    private ExoPlayerManager exoPlayerManager;
+    private PlayerManager exoPlayerManager;
 
     @Override
     public void onCreate() {
@@ -46,13 +48,13 @@ public class MusicService extends MediaBrowserServiceCompat {
         // 使用 ACTION_PLAY 设置初始 PlaybackState，以便媒体按钮可以启动播放器
         stateBuilder = new PlaybackStateCompat.Builder()
                 .setState(PlaybackStateCompat.STATE_NONE, 0, 1.0f)
-                .setActions(ExoPlayerManager.getAvailableActions(PlaybackStateCompat.STATE_NONE));
+                .setActions(PlayerManager.getAvailableActions(PlaybackStateCompat.STATE_NONE));
         mediaSession.setPlaybackState(stateBuilder.build());
 
         myAudioManager = new MyAudioManager(this, mediaSession);
         myNotificationManager = new MyNotificationManager(this, mediaSession);
-
-        exoPlayerManager = new ExoPlayerManager(this, myAudioManager, myNotificationManager, mediaSession);
+        myNotificationManager.registerPlayerBroadcastReceiver();
+        exoPlayerManager = new PlayerManager(this, myAudioManager, myNotificationManager, mediaSession);
         // MySessionCallback() 具有处理来自媒体控制器的回调的方法
         mediaSession.setCallback(exoPlayerManager);
 
@@ -76,12 +78,13 @@ public class MusicService extends MediaBrowserServiceCompat {
             return;
         }
         // 例如假设音乐目录已经加载缓存。
-        result.sendResult(CollectionsKt.map(exoPlayerManager.getPlayQueue(), Song::mapToMediaItem));
+        result.sendResult(CollectionsKt.map(SongRepository.getInstance().getPlayQueue(), Song::mapToMediaItem));
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        myNotificationManager.unregisterPlayerBroadcastReceiver();
         exoPlayerManager.unregister();
     }
 }

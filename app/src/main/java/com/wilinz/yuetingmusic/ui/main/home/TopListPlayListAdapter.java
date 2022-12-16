@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.wilinz.yuetingmusic.data.model.TopList;
 import com.wilinz.yuetingmusic.data.model.TopListSong;
-import com.wilinz.yuetingmusic.databinding.ItemFirstThreeListBinding;
+import com.wilinz.yuetingmusic.databinding.ItemMusicBinding;
 import com.wilinz.yuetingmusic.databinding.ItemTopListBinding;
 
 import java.util.List;
@@ -44,9 +44,9 @@ public class TopListPlayListAdapter extends RecyclerView.Adapter<TopListPlayList
 
     static class MyViewHolder extends RecyclerView.ViewHolder {
 
-        ItemFirstThreeListBinding binding;
+        ItemMusicBinding binding;
 
-        public MyViewHolder(@NonNull ItemFirstThreeListBinding binding) {
+        public MyViewHolder(@NonNull ItemMusicBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
         }
@@ -55,7 +55,7 @@ public class TopListPlayListAdapter extends RecyclerView.Adapter<TopListPlayList
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        ItemFirstThreeListBinding binding = ItemFirstThreeListBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        ItemMusicBinding binding = ItemMusicBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
         MyViewHolder holder = new MyViewHolder(binding);
 
         binding.getRoot().setOnClickListener(v -> {
@@ -70,23 +70,23 @@ public class TopListPlayListAdapter extends RecyclerView.Adapter<TopListPlayList
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull TopListPlayListAdapter.MyViewHolder holder, int position) {
-        ItemFirstThreeListBinding binding = holder.binding;
+        ItemMusicBinding binding = holder.binding;
         TopListSong.PlaylistBean.TracksBean track = songs.get(position);
         binding.serialNumber.setText((position + 1) + "");
-        binding.songName.setText(track.name);
+        binding.name.setText(track.name);
 
         Glide.with(binding.songAvatar)
                 .load(track.al.picUrl)
                 .into(binding.songAvatar);
 
         TopListSong.PlaylistBean.TracksBean.ArBean artist = CollectionsKt.firstOrNull(track.ar);
-        if (artist != null) binding.songArtist.setText(artist.name);
+        if (artist != null) binding.secondName.setText(artist.name);
     }
 
     @Override
     public int getItemCount() {
         int size = songs.size();
-        return Math.min(size,3);
+        return size;
     }
 
 

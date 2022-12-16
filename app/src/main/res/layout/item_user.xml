@@ -4,7 +4,10 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:padding="8dp"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
     android:clickable="true"
     android:background="?android:attr/selectableItemBackground"
     android:gravity="center_vertical"
@@ -14,6 +17,7 @@
         android:id="@+id/song_avatar"
         android:layout_width="48dp"
         android:layout_height="48dp"
+        android:scaleType="centerCrop"
         app:shapeAppearanceOverlay="@style/cornerStyle"/>
 
     <TextView
@@ -30,13 +34,13 @@
         android:layout_weight="1"
         android:orientation="vertical">
         <TextView
-            android:id="@+id/song_name"
+            android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:text="在你的身边"/>
 
         <TextView
-            android:id="@+id/song_artist"
+            android:id="@+id/second_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="12sp"
@@ -45,9 +49,9 @@
     </LinearLayout>
 
     <TextView
+        android:id="@+id/tag"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:textColor="@color/my_light_primary"
-        android:text="霸榜"/>
+        android:textColor="@color/my_primary" />
 </LinearLayout>

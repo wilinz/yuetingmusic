@@ -6,6 +6,7 @@ import android.os.Parcelable;
 import org.litepal.annotation.Column;
 import org.litepal.crud.LitePalSupport;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -51,19 +52,19 @@ public class User extends LitePalSupport implements Parcelable {
                 '}';
     }
 
-    public User(){
+    public User() {
 
     }
 
     public int id;
-    @Column(unique = true,index = true)
+    @Column(unique = true, index = true)
     public String username;
     public String password;
     public String nickname;
     public String avatar;
     public String introduction;
-    public List<Song> favoriteSong;
-    public List<Song> recentSong;
+    public List<FavoriteSong> favoriteSongs;
+    public List<RecentSong> recentSongs;
     @Column()
     public boolean isActive;
 
