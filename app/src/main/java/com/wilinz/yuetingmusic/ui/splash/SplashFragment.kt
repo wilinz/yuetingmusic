@@ -31,7 +31,7 @@ class SplashFragment : Fragment() {
         lifecycleScope.launch {
             delay(500)
             val targetFragment =
-                if (Pref.getInstance(requireContext()).isFirstLaunch) R.id.action_SplashFragment_to_WelcomeFragment
+                if (Pref.getInstance(requireContext())!!.isFirstLaunch) R.id.action_SplashFragment_to_WelcomeFragment
                 else R.id.action_SplashFragment_to_MainFragment
             val navHostFragment = NavHostFragment.findNavController(this@SplashFragment)
 
