@@ -28,4 +28,4 @@
 - 下载体验：
 - UI效果图如下：
 
-<img src="image/3.jpg" style="zoom:25%;" /><img src="image/1.jpg" style="zoom:25%;" /><img src="image/4.jpg" style="zoom:25%;" /><img src="image/5.jpg" style="zoom:25%;" /><img src="image/2.jpg" style="zoom:25%;" /><img src="image/7.jpg" style="zoom:25%;" /><img src="image/8.jpg" style="zoom:25%;" /><img src="image/9.jpg" style="zoom:25%;" /><img src="image/6.jpg" style="zoom:25%;" /><img src="image/11.jpg" style="zoom:25%;" />
+<img src="image/3.jpg" width="200px" /><img src="image/1.jpg" width="200px" /><img src="image/4.jpg" width="200px" /><img src="image/5.jpg" width="200px" /><img src="image/2.jpg" width="200px" /><img src="image/7.jpg" width="200px" /><img src="image/8.jpg" width="200px" /><img src="image/9.jpg" width="200px" /><img src="image/6.jpg" width="200px" /><img src="image/11.jpg" width="200px" />
