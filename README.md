@@ -25,7 +25,7 @@
 - 收藏，播放记录：这些目前都基于本地账户
 - 首页榜单：未做优化，有bug，可能会请求大量数据
 - 播放器界面：未做深浅背景优化，后续可能会用 androidx.palette:palette:1.0.0 这个库优化
-- 下载体验：
+- 下载体验：https://github.com/wilinz/yuetingmusic/releases
 - UI效果图如下：
 
 <img src="image/3.jpg" width="325px" /><img src="image/1.jpg" width="325px" /><img src="image/4.jpg" width="325px" /><img src="image/5.jpg" width="325px" /><img src="image/2.jpg" width="325px" /><img src="image/7.jpg" width="325px" /><img src="image/8.jpg" width="325px" /><img src="image/9.jpg" width="325px" /><img src="image/6.jpg" width="325px" /><img src="image/11.jpg" width="325px" />
