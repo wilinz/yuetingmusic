@@ -99,7 +99,7 @@ dependencies {
     implementation 'com.squareup.retrofit2:adapter-rxjava3:2.9.0'
     implementation 'jp.wasabeef:glide-transformations:4.3.0'
     implementation 'androidx.palette:palette:1.0.0'
-
+    implementation 'com.google.code.gson:gson:2.10'
     implementation 'com.squareup.okhttp3:logging-interceptor:4.10.0'
     implementation 'com.github.thomas-bouvier:persistent-cookie-jar-okhttp:1.0.2'
 }
