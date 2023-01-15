@@ -1,4 +1,4 @@
-package com.wilinz.yuetingmusic.data.services.user
+package com.wilinz.yuetingmusic.data.services
 
 import com.wilinz.yuetingmusic.data.model.TopList
 import com.wilinz.yuetingmusic.data.model.TopListSong

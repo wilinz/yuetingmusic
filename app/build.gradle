@@ -100,4 +100,6 @@ dependencies {
     implementation 'jp.wasabeef:glide-transformations:4.3.0'
     implementation 'androidx.palette:palette:1.0.0'
 
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.10.0'
+    implementation 'com.github.thomas-bouvier:persistent-cookie-jar-okhttp:1.0.2'
 }

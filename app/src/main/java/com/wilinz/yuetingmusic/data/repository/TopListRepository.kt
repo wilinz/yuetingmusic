@@ -8,11 +8,11 @@ import io.reactivex.rxjava3.core.Observable
 
 class TopListRepository private constructor() {
     fun get(): Observable<TopList> {
-        return AppNewWork.instance!!.topListService.topList()
+        return AppNewWork.instance.topListService.topList()
     }
 
     fun getTopListDetails(id: Long): Observable<TopListSong> {
-        return AppNewWork.instance!!.topListService.getTopListDetails(id)
+        return AppNewWork.instance.topListService.getTopListDetails(id)
     }
 
     companion object {

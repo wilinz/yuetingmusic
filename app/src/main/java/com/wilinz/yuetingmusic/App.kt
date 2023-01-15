@@ -14,13 +14,12 @@ class App : Application() {
 
     private fun setRxJavaErrorHandler() {
         RxJavaPlugins.setErrorHandler { throwable -> // throwable.printStackTrace();
-            throwable?.printStackTrace()
+            throwable.printStackTrace()
         }
     }
 
     companion object {
         private const val TAG = "App"
-        @JvmField
-        var instance: Application? = null
+        lateinit var instance: Application
     }
 }
