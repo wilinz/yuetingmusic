@@ -10,6 +10,7 @@ import com.wilinz.yuetingmusic.R
 import com.wilinz.yuetingmusic.data.model.User
 import com.wilinz.yuetingmusic.databinding.ItemUserBinding
 import com.wilinz.yuetingmusic.ui.user.UserListAdapter.UserListViewHolder
+import com.wilinz.yuetingmusic.util.ScreenUtil
 
 class UserListAdapter(private var users: List<User>) : RecyclerView.Adapter<UserListViewHolder>() {
     private var listener: ((users: List<User>, index: Int, user: User)->Unit)? = null
@@ -56,8 +57,9 @@ class UserListAdapter(private var users: List<User>) : RecyclerView.Adapter<User
         } else {
             binding.tag.text = ""
         }
+        val size = ScreenUtil.dpToPx(binding.songAvatar.context, 48)
         Glide.with(binding.songAvatar)
-            .load(user.avatar)
+            .load(user.avatar + "?param=${size}y${size}")
             .error(R.drawable.avatar2)
             .into(binding.songAvatar)
     }

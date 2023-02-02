@@ -17,6 +17,7 @@ import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.bumptech.glide.Glide
 import com.wilinz.yuetingmusic.R
 import com.wilinz.yuetingmusic.databinding.FragmentMainBinding
+import com.wilinz.yuetingmusic.util.ScreenUtil
 
 class MainFragment : Fragment() {
     private var binding: FragmentMainBinding? = null
@@ -105,8 +106,9 @@ class MainFragment : Fragment() {
         Log.d(TAG, "updateMetadata: ")
         if (metadata == null) return
         val description = metadata.description
+        val size = ScreenUtil.dpToPx(binding!!.songAvatar.context, 48)
         Glide.with(requireContext())
-            .load(description.iconUri)
+            .load(description.iconUri.toString() + "?param=${size}y${size}")
             .into(binding!!.songAvatar)
         binding!!.name.text = description.title.toString() + " - " + description.subtitle
     }

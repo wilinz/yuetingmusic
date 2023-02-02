@@ -10,6 +10,7 @@ import com.wilinz.yuetingmusic.R
 import com.wilinz.yuetingmusic.data.model.Song
 import com.wilinz.yuetingmusic.databinding.ItemMusicBinding
 import com.wilinz.yuetingmusic.ui.commen.MusicAdapter.MusicViewHolder
+import com.wilinz.yuetingmusic.util.ScreenUtil
 
 class MusicAdapter(private var songs: List<Song>) : RecyclerView.Adapter<MusicViewHolder>() {
     private var listener: ((songs: List<Song>, index: Int, song: Song) -> Unit)? = null
@@ -52,8 +53,9 @@ class MusicAdapter(private var songs: List<Song>) : RecyclerView.Adapter<MusicVi
         binding.name.text = song.title
         binding.serialNumber.text = (position + 1).toString() + ""
         binding.secondName.text = song.artist + "-" + song.album
+        val size = ScreenUtil.dpToPx(binding.songAvatar.context, 48)
         Glide.with(binding.songAvatar)
-            .load(song.coverImgUrl)
+            .load(song.coverImgUrl + "?param=${size}y${size}")
             .error(R.drawable.icon)
             .into(binding.songAvatar)
     }

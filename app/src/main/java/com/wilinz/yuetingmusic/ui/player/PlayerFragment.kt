@@ -19,6 +19,7 @@ import com.wilinz.yuetingmusic.R
 import com.wilinz.yuetingmusic.constant.PlayMode
 import com.wilinz.yuetingmusic.databinding.FragmentPlayerBinding
 import com.wilinz.yuetingmusic.util.LogUtil.d
+import com.wilinz.yuetingmusic.util.ScreenUtil
 import com.wilinz.yuetingmusic.util.ScreenUtil.getNavigationBarHeight
 import com.wilinz.yuetingmusic.util.TimeUtil.format
 import com.wilinz.yuetingmusic.util.UriUtil.idToUri
@@ -135,7 +136,7 @@ class PlayerFragment : Fragment() {
         binding!!.name.text = description.title.toString() + " - " + description.subtitle
         if (description.iconUri != idToUri(requireContext(), R.drawable.icon)) {
             Glide.with(requireContext())
-                .load(description.iconUri)
+                .load(description.iconUri.toString() + "?param=${binding!!.backgroundImage.width}y${binding!!.backgroundImage.height}")
                 .apply(RequestOptions.bitmapTransform(BlurTransformation(50, 3)))
                 .into(binding!!.backgroundImage)
         }
@@ -155,8 +156,10 @@ class PlayerFragment : Fragment() {
             public void onLoadCleared(@Nullable Drawable placeholder) {
 
             }
-        });*/Glide.with(requireContext())
-            .load(description.iconUri)
+        });*/
+        val size = ScreenUtil.dpToPx(binding!!.avatar.context, 300)
+        Glide.with(requireContext())
+            .load(description.iconUri.toString() + "?param=${size}y${size}")
             .error(R.drawable.logo)
             .into(binding!!.avatar)
         val duration = metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)

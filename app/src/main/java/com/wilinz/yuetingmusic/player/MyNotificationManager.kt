@@ -105,9 +105,9 @@ class MyNotificationManager(private val context: Context, mediaSession: MediaSes
         if (mediaMetadata != null) {
             val description = mediaMetadata.description
             if (description != null) {
-                title = description.title?:""
-                subtitle = description.subtitle?:""
-                desc = description.description?:""
+                title = description.title ?: ""
+                subtitle = description.subtitle ?: ""
+                desc = description.description ?: ""
                 largeIcon = description.iconBitmap
                 iconUri = description.iconUri
             }
@@ -205,9 +205,10 @@ class MyNotificationManager(private val context: Context, mediaSession: MediaSes
                     )
             )
         Log.d(TAG, "createPlayerNotificationBuilder: $iconUri")
+        val size = 144
         Glide.with(context)
             .asBitmap()
-            .load(iconUri)
+            .load(iconUri.toString() + "?param=${size}y${size}")
             .error(R.drawable.avatar)
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .into(object : CustomTarget<Bitmap>(144, 144) {

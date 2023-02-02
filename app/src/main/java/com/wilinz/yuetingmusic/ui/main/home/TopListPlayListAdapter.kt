@@ -1,6 +1,7 @@
 package com.wilinz.yuetingmusic.ui.main.home
 
 import android.annotation.SuppressLint
+import android.app.Application
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,10 +9,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.wilinz.yuetingmusic.data.model.TopListSong.PlaylistBean.TracksBean
 import com.wilinz.yuetingmusic.databinding.ItemMusicBinding
+import com.wilinz.yuetingmusic.util.ScreenUtil
 
 class TopListPlayListAdapter(private var songs: List<TracksBean>) :
     RecyclerView.Adapter<TopListPlayListAdapter.MyViewHolder>() {
-    private var listener: ((songs: List<TracksBean>, index: Int, song: TracksBean)->Unit)? = null
+    private var listener: ((songs: List<TracksBean>, index: Int, song: TracksBean) -> Unit)? = null
 
     interface OnItemClickListener {
         fun onItemClick(songs: List<TracksBean>?, index: Int, song: TracksBean?)
@@ -22,7 +24,7 @@ class TopListPlayListAdapter(private var songs: List<TracksBean>) :
         notifyDataSetChanged()
     }
 
-    fun setOnItemClickListener(l: (songs: List<TracksBean>, index: Int, song: TracksBean)->Unit) {
+    fun setOnItemClickListener(l: (songs: List<TracksBean>, index: Int, song: TracksBean) -> Unit) {
         listener = l
     }
 
@@ -48,8 +50,9 @@ class TopListPlayListAdapter(private var songs: List<TracksBean>) :
         val track = songs[position]
         binding.serialNumber.text = (position + 1).toString() + ""
         binding.name.text = track.name
+        val size = ScreenUtil.dpToPx(binding.songAvatar.context, 48)
         Glide.with(binding.songAvatar)
-            .load(track.al!!.picUrl)
+            .load(track.al!!.picUrl + "?param=${size}y${size}")
             .into(binding.songAvatar)
         val artist = track.ar!!.firstOrNull()
         if (artist != null) binding.secondName.text = artist.name
