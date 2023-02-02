@@ -23,7 +23,7 @@
 - 音乐Api：https://github.com/Binaryify/NeteaseCloudMusicApi （声明：音乐api仅用于学习）
 - 登录功能：由于一些原因，登录功能仅为本地登录（后续会改成api登录），新版本已经改为验证码登录（未完善），本地登录暂时关闭，仅支持访客登录，账号：手机号，密码：短信验证码
 - 收藏，播放记录：这些目前都基于本地账户
-- 首页榜单：未做优化，有bug，可能会请求大量数据
+- 已优化：~~首页榜单：未做优化，有bug，可能会请求大量数据~~
 - 已完成：~~播放器界面：未做深浅背景优化，后续可能会用 androidx.palette:palette:1.0.0 这个库优化~~
 - 下载体验：https://github.com/wilinz/yuetingmusic/releases
 - UI效果图如下：
