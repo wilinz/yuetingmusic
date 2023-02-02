@@ -2,6 +2,7 @@ package com.wilinz.yuetingmusic.ui.player
 
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -277,6 +278,20 @@ class PlayerFragment : Fragment() {
             }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        val currentNightMode =
+            requireContext().resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        val window = requireActivity().window
+        when (currentNightMode) {
+            Configuration.UI_MODE_NIGHT_NO -> {
+                setStatusBarTint(window, true)
+            } // Night mode is not active, we're using the light theme
+            Configuration.UI_MODE_NIGHT_YES -> {
+                setStatusBarTint(window, false)
+            } // Night mode is active, we're using dark theme
+        }
+    }
 
     companion object {
         private const val TAG = "PlayerFragment"
