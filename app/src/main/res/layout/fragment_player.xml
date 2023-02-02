@@ -54,128 +54,136 @@
 
             </LinearLayout>
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/favorite"
-                    style="@style/Widget.Material3.Button.IconButtonFixed"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:icon="@drawable/outline_favorite_border_24"/>
-            </androidx.constraintlayout.widget.ConstraintLayout>
-            <TextView
-                android:id="@+id/name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="18sp"
-                android:layout_marginStart="8dp"
-                android:text="起风了"/>
-
-            <androidx.appcompat.widget.AppCompatSeekBar
-                android:id="@+id/current_progress"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:thumbTint="@color/my_primary"
-                android:progressTint="@color/my_primary"
-                android:valueFrom="0.0"
-                android:valueTo="100.0" />
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp">
-                <TextView
-                    android:id="@+id/current_progress_time"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="00:13"
-                    android:layout_alignParentStart="true"/>
-                <TextView
-                    android:id="@+id/duration"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="03:57"
-                    android:layout_alignParentEnd="true"/>
-            </RelativeLayout>
-
-
             <LinearLayout
+                android:id="@+id/bottom"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="0dp">
-                <FrameLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="@integer/material_motion_duration_long_1">
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/switch_play_mode"
-                        android:layout_gravity="center"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        style="@style/Widget.Material3.Button.IconButtonFixed"
-                        app:icon="@drawable/round_repeat_24"/>
-
-                </FrameLayout>
-
-                <FrameLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="@integer/material_motion_duration_long_1">
-                    <Button
-                        android:id="@+id/skip_to_previous"
-                        android:layout_gravity="center"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        style="@style/Widget.Material3.Button.IconButtonFixed"
-                        app:icon="@drawable/skip_previous"/>
-
-                </FrameLayout>
-                <FrameLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="@integer/material_motion_duration_long_1">
+                android:orientation="vertical">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
                     <com.google.android.material.button.MaterialButton
-                        android:id="@+id/play_pause"
+                        android:id="@+id/favorite"
                         style="@style/Widget.Material3.Button.IconButtonFixed"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        app:icon="@drawable/play_arrow_24px" />
-
-                </FrameLayout>
-                <FrameLayout
-                    android:layout_width="0dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:icon="@drawable/outline_favorite_border_24"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+                <TextView
+                    android:id="@+id/name"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="@integer/material_motion_duration_long_1">
-                    <Button
-                        android:id="@+id/skip_to_next"
-                        android:layout_gravity="center"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        style="@style/Widget.Material3.Button.IconButtonFixed"
-                        app:icon="@drawable/skip_next"/>
+                    android:textSize="18sp"
+                    android:layout_marginStart="8dp"
+                    android:text="起风了"/>
 
-                </FrameLayout>
-                <FrameLayout
-                    android:layout_width="0dp"
+                <androidx.appcompat.widget.AppCompatSeekBar
+                    android:id="@+id/current_progress"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="@integer/material_motion_duration_long_1">
-                    <Button
-                        android:layout_gravity="center"
+                    android:thumbTint="@color/my_primary"
+                    android:progressTint="@color/my_primary"
+                    android:valueFrom="0.0"
+                    android:valueTo="100.0" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp">
+                    <TextView
+                        android:id="@+id/current_progress_time"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        style="@style/Widget.Material3.Button.IconButtonFixed"
-                        app:icon="@drawable/round_queue_music_24"/>
+                        android:text="00:13"
+                        android:layout_alignParentStart="true"/>
+                    <TextView
+                        android:id="@+id/duration"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="03:57"
+                        android:layout_alignParentEnd="true"/>
+                </RelativeLayout>
 
-                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="0dp">
+                    <FrameLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="@integer/material_motion_duration_long_1">
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/switch_play_mode"
+                            android:layout_gravity="center"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            style="@style/Widget.Material3.Button.IconButtonFixed"
+                            app:icon="@drawable/round_repeat_24"/>
+
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="@integer/material_motion_duration_long_1">
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/skip_to_previous"
+                            android:layout_gravity="center"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            style="@style/Widget.Material3.Button.IconButtonFixed"
+                            app:icon="@drawable/skip_previous"/>
+
+                    </FrameLayout>
+                    <FrameLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="@integer/material_motion_duration_long_1">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/play_pause"
+                            style="@style/Widget.Material3.Button.IconButtonFixed"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            app:icon="@drawable/play_arrow_24px" />
+
+                    </FrameLayout>
+                    <FrameLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="@integer/material_motion_duration_long_1">
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/skip_to_next"
+                            android:layout_gravity="center"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            style="@style/Widget.Material3.Button.IconButtonFixed"
+                            app:icon="@drawable/skip_next"/>
+
+                    </FrameLayout>
+                    <FrameLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="@integer/material_motion_duration_long_1">
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/play_list"
+                            android:layout_gravity="center"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            style="@style/Widget.Material3.Button.IconButtonFixed"
+                            app:icon="@drawable/round_queue_music_24"/>
+
+                    </FrameLayout>
+                </LinearLayout>
             </LinearLayout>
+
             <Space
                 android:id="@+id/bottom_padding"
                 android:layout_width="match_parent"

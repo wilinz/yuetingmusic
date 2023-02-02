@@ -25,6 +25,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import com.chayangkoon.champ.glide.ktx.intoCustomTarget
 import com.wilinz.yuetingmusic.Key
 import com.wilinz.yuetingmusic.MainActivity
 import com.wilinz.yuetingmusic.Pref.Companion.getInstance
@@ -211,23 +212,19 @@ class MyNotificationManager(private val context: Context, mediaSession: MediaSes
             .load(iconUri.toString() + "?param=${size}y${size}")
             .error(R.drawable.avatar)
             .diskCacheStrategy(DiskCacheStrategy.ALL)
-            .into(object : CustomTarget<Bitmap>(144, 144) {
-                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                    val mediaMetadataCompat1 = mediaSession.controller.metadata
-                    if (mediaMetadata != null && mediaMetadataCompat1 != null) {
-                        val desc1 = mediaMetadata.description
-                        val desc2 = mediaMetadataCompat1.description
-                        if (desc1 != null && desc2 != null) {
-                            if (desc1.mediaId != desc2.mediaId) {
-                                return
-                            }
+            .intoCustomTarget(size, size, { bitmap, _ ->
+                val mediaMetadataCompat1 = mediaSession.controller.metadata
+                if (mediaMetadata != null && mediaMetadataCompat1 != null) {
+                    val desc1 = mediaMetadata.description
+                    val desc2 = mediaMetadataCompat1.description
+                    if (desc1 != null && desc2 != null) {
+                        if (desc1.mediaId != desc2.mediaId) {
+                            return@intoCustomTarget
                         }
                     }
-                    builder.setLargeIcon(resource)
-                    notificationManager.notify(notificationId, builder.build())
                 }
-
-                override fun onLoadCleared(placeholder: Drawable?) {}
+                builder.setLargeIcon(bitmap)
+                notificationManager.notify(notificationId, builder.build())
             })
         return builder
     }

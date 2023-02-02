@@ -1,7 +1,12 @@
 package com.wilinz.yuetingmusic.ui.player
 
 import android.annotation.SuppressLint
+import android.content.res.ColorStateList
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
 import android.os.Bundle
+import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
@@ -13,17 +18,20 @@ import android.widget.SeekBar.OnSeekBarChangeListener
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.palette.graphics.Palette
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.chayangkoon.champ.glide.ktx.intoCustomTarget
 import com.wilinz.yuetingmusic.R
 import com.wilinz.yuetingmusic.constant.PlayMode
 import com.wilinz.yuetingmusic.databinding.FragmentPlayerBinding
+import com.wilinz.yuetingmusic.util.*
 import com.wilinz.yuetingmusic.util.LogUtil.d
-import com.wilinz.yuetingmusic.util.ScreenUtil
 import com.wilinz.yuetingmusic.util.ScreenUtil.getNavigationBarHeight
 import com.wilinz.yuetingmusic.util.TimeUtil.format
 import com.wilinz.yuetingmusic.util.UriUtil.idToUri
 import jp.wasabeef.glide.transformations.BlurTransformation
+import kotlin.math.max
 
 class PlayerFragment : Fragment() {
     private var viewModel: PlayerViewModel? = null
@@ -134,34 +142,19 @@ class PlayerFragment : Fragment() {
         if (metadata == null) return
         val description = metadata.description
         binding!!.name.text = description.title.toString() + " - " + description.subtitle
-        if (description.iconUri != idToUri(requireContext(), R.drawable.icon)) {
-            Glide.with(requireContext())
-                .load(description.iconUri.toString() + "?param=${binding!!.backgroundImage.width}y${binding!!.backgroundImage.height}")
-                .apply(RequestOptions.bitmapTransform(BlurTransformation(50, 3)))
-                .into(binding!!.backgroundImage)
-        }
-
-        /*    Glide.with(requireContext())
-                .asBitmap()
-                .load(description.getIconUri())
-                .apply(RequestOptions.bitmapTransform(new BlurTransformation(50, 3)))
-                .into(new CustomTarget<Bitmap>(binding.backgroundImage.getWidth(), binding.backgroundImage.getHeight()) {
-            @Override
-            public void onResourceReady(@NonNull Bitmap bitmap, @Nullable Transition<? super Bitmap> transition) {
-                Palette.from(bitmap)
-                        .
-            }
-
-            @Override
-            public void onLoadCleared(@Nullable Drawable placeholder) {
-
-            }
-        });*/
         val size = ScreenUtil.dpToPx(binding!!.avatar.context, 300)
+        val imageUrl = description.iconUri.toString() + "?param=${size}y${size}"
+
         Glide.with(requireContext())
-            .load(description.iconUri.toString() + "?param=${size}y${size}")
+            .asBitmap()
+            .load(imageUrl)
+            .placeholder(binding!!.avatar.drawable)
             .error(R.drawable.logo)
-            .into(binding!!.avatar)
+            .intoCustomTarget({ resource, _ ->
+                setBackgroundImage(description, resource)
+                setAvatar(resource, size)
+            })
+
         val duration = metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)
         Log.d(TAG, "updateMetadata: " + duration + ", " + format(duration))
         if (duration > 0) {
@@ -171,6 +164,119 @@ class PlayerFragment : Fragment() {
             binding!!.duration.text = format(duration)
         }
     }
+
+    private fun setAvatar(resource: Bitmap?, size: Int) {
+        Glide.with(requireContext()).load(resource).override(size, size)
+            .into(binding!!.avatar)
+    }
+
+    private fun setBackgroundImage(
+        description: MediaDescriptionCompat,
+        resource: Bitmap
+    ) {
+        val width = binding!!.backgroundImage.width
+        val height = binding!!.backgroundImage.height
+        val backgroundImage =
+            if (description.iconUri != idToUri(requireContext(), R.drawable.icon)) {
+                zoomImg(
+                    resource,
+                    width,
+                    height
+                )
+            } else {
+                val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+                val canvas = Canvas(bitmap)
+                canvas.drawColor(0xfff)
+                bitmap
+            }
+        Glide.with(requireContext())
+            .asBitmap()
+            .load(backgroundImage)
+            .override(width, height)
+            .apply(RequestOptions.bitmapTransform(BlurTransformation(50, 3)))
+            .intoCustomTarget({ bitmap0, _ ->
+                binding!!.backgroundImage.setImageBitmap(bitmap0)
+                val bitmap = zoomImg(
+                    bitmap0,
+                    width,
+                    height
+                )
+                setStatusBarTint(bitmap)
+                setBottomViewTint(bitmap)
+            })
+    }
+
+    private fun setBottomViewTint(bitmap: Bitmap) {
+        binding!!.bottom.getBackgroundTint(bitmap) { isDark ->
+            binding!!.currentProgress.progressBackgroundTintList =
+                ColorStateList.valueOf(if (isDark) Color.WHITE else Color.BLACK)
+
+            listOf(
+                binding!!.name,
+                binding!!.currentProgressTime,
+                binding!!.duration
+            ).forEach { view ->
+                view.setTextColor(if (isDark) Color.WHITE else Color.BLACK)
+            }
+
+            listOf(
+                binding!!.favorite,
+                binding!!.switchPlayMode,
+                binding!!.skipToPrevious,
+                binding!!.playPause,
+                binding!!.skipToNext,
+                binding!!.playList
+            ).forEach { view ->
+                view.iconTint =
+                    ColorStateList.valueOf(if (isDark) Color.WHITE else Color.BLACK)
+            }
+        }
+    }
+
+    private fun setStatusBarTint(resource: Bitmap) {
+        val statusBarHeight =
+            ScreenUtil.getStatusBarHeight(this@PlayerFragment.requireContext())
+        Palette
+            .from(resource)
+            .maximumColorCount(24)
+            .setRegion(
+                0,
+                0,
+                resource.width,
+                statusBarHeight
+            )
+            .generate {
+                val isDark = it?.isDark() ?: resource.isDark(
+                    0,
+                    0,
+                    resource.width,
+                    statusBarHeight
+                )
+                setStatusBarTint(
+                    requireActivity().window,
+                    !isDark
+                )
+            }
+    }
+
+    private fun View.getBackgroundTint(background: Bitmap, callback: (isDark: Boolean) -> Unit) {
+        val view = this
+        val rect = view.getBoundsByRoot(binding!!.root)
+
+        Log.d(TAG, "getBackgroundTint: ${background.width}, ${background.height}")
+        Log.d(TAG, "getBackgroundTint: ${rect}")
+        Palette
+            .from(background)
+            .maximumColorCount(24)
+            .setRegion(rect.left, rect.top, rect.right, rect.bottom)
+            .generate {
+                val isDark = it?.isDark() ?: background.isDark(
+                    rect.left, rect.top, rect.right, rect.bottom
+                )
+                callback(isDark)
+            }
+    }
+
 
     companion object {
         private const val TAG = "PlayerFragment"

@@ -53,4 +53,14 @@ object ScreenUtil {
             resources.getIdentifier("navigation_bar_height", "dimen", "android")
         return resources.getDimensionPixelSize(resourceId)
     }
+
+    @SuppressLint("InternalInsetResource")
+    fun getStatusBarHeight(context: Context): Int {
+        var result = 0
+        val resourceId: Int = context.resources.getIdentifier("status_bar_height", "dimen", "android")
+        if (resourceId > 0) {
+            result = context.resources.getDimensionPixelSize(resourceId)
+        }
+        return result
+    }
 }
