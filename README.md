@@ -4,7 +4,7 @@
 
 ### 特点
 
-漂亮UI，支持耳机线控，通知栏播放效果炫酷（使用官方MediaSessionCompat 框架），耳机断开自动暂停（防止噪音），打开别的音乐或者视频会自动暂停（防止混音，实现方式：android.media.AudioManager）
+Material you UI，支持耳机线控，通知栏播放效果炫酷（使用官方MediaSessionCompat 框架），耳机断开自动暂停（防止噪音），打开别的音乐或者视频会自动暂停（防止混音，实现方式：android.media.AudioManager）
 
 - 说明：由于一些原因，main分支使用java编写，kotlin 分支使用 kotlin（只是简单转换，未使用Kotlin特性优化代码），可能存在Bug
 - 架构：mvvm
