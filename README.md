@@ -17,7 +17,7 @@ Material you UI，支持耳机线控，通知栏播放效果炫酷（使用官�
 - UI架构：单Activity+jetpack navigation+xml+Material 3 MDC组件+fragment，优化可使用单Activity+jetpack navigation+jetpack compose (Material 3)
 - 图片加载：Glide+glide-transformations，compose可使用coil
 - 权限请求：permissionx，compose使用 jetpack compose permission 库
-- 分页：viewpager2
+- 主页导航：viewpager2
 - 事件：eventbus
 - cookie管理：com.github.thomas-bouvier:persistent-cookie-jar-okhttp:1.0.2
 - 音乐Api：https://github.com/Binaryify/NeteaseCloudMusicApi （声明：音乐api仅用于学习）
