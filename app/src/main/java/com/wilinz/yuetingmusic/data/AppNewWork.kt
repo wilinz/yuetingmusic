@@ -48,7 +48,7 @@ object AppNewWork {
                 }
             }
         }.build())
-        .baseUrl("https://home.wilinz.com:9999/")
+        .baseUrl("https://cloudmusic.wilinz.com/")
         .addConverterFactory(GsonConverterFactory.create())
         .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
         .build()
